@@ -2037,7 +2037,9 @@ function exporterJSON() {
         config: { actions: config.actions }
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_Enc' + etat.enceinte + '_' + etat.date + '.json';
+    var maintenant = new Date();
+    var heure = ('0' + maintenant.getHours()).slice(-2) + 'h' + ('0' + maintenant.getMinutes()).slice(-2);
+    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_enceinte-' + etat.enceinte + '_' + etat.date + '_' + heure + '.json';
 
     if (typeof AndroidDownload !== 'undefined') {
         AndroidDownload.download(nomFichier, 'application/json', JSON.stringify(data, null, 2));
@@ -2144,7 +2146,9 @@ function exporterCSV() {
         }
     }
     var csv = '﻿' + lignes.join('\r\n');
-    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_' + etat.date + '.csv';
+    var maintenant = new Date();
+    var heure = ('0' + maintenant.getHours()).slice(-2) + 'h' + ('0' + maintenant.getMinutes()).slice(-2);
+    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_enceinte-' + etat.enceinte + '_' + etat.date + '_' + heure + '.csv';
     if (typeof AndroidDownload !== 'undefined') {
         AndroidDownload.download(nomFichier, 'text/csv', csv);
         return;
