@@ -855,6 +855,7 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 
                 <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Actions de scoring</h4>
                 <div id="aide-table-actions"></div>
+                <p style="margin-top:8px;margin-bottom:14px;font-size:0.85em;color:var(--couleur-texte-clair)">Les actions de scoring sont paramétrables dans la <strong>Configuration avancée</strong> (icône ⚙) : attribution des points, intitulés des actions, ajout de nouvelles actions (jusqu'à 10 au total, 6 actives).</p>
 
                 <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Carton rouge</h4>
                 <p style="margin-bottom:14px">2 pénalités = carton rouge = disqualification. Le chrono est mis en pause, les scores du disqualifié passent à 0, et tous ses combats restants sont déclarés forfait.</p>
@@ -890,8 +891,8 @@ var COULEURS_PALETTE = ['#E65100','#7B1FA2','#AB47BC','#546E7A','#FC466B','#0089
 var ACTIONS_DEFAUT = [
     { id: 'tomber', label: 'Tomber', pts: 50, couleur: '#E65100', actif: true, defaut: true },
     { id: 'miseDanger', label: 'Mise en danger', pts: 10, couleur: '#7B1FA2', actif: true, defaut: true },
-    { id: 'demiMiseDanger', label: '1/2 Mise en D.', pts: 5, couleur: '#AB47BC', actif: true, defaut: true },
-    { id: 'passageArriere', label: 'Pass. arrière', pts: 2, couleur: '#546E7A', actif: true, defaut: true },
+    { id: 'demiMiseDanger', label: '1/2 Mise en danger', pts: 5, couleur: '#AB47BC', actif: true, defaut: true },
+    { id: 'passageArriere', label: 'Passage arrière', pts: 2, couleur: '#546E7A', actif: true, defaut: true },
     { id: 'penalite', label: 'Pénalité', pts: -10, couleur: '#FC466B', actif: true, defaut: true }
 ];
 
