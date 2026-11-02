@@ -1,0 +1,12 @@
+{
+    "name": "Compteur Lutte",
+    "short_name": "Lutte",
+    "description": "Gestion des combats de lutte au sol — EPS",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#0D47A1",
+    "theme_color": "#0D47A1",
+    "lang": "fr",
+    "icons": []
+}

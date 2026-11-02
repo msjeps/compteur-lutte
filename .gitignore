@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Références papier (pas versionnées)
+*.docx
+
+# IDE
+.idea/
+*.iml
+
+# Build APK (futur)
+*.apk
+*.jks
+keystore.properties
+build/
+.gradle/
+local.properties

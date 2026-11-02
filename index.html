@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0D47A1">
+<title>Compteur Lutte</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+    --couleur-primaire: #0D47A1;
+    --couleur-secondaire: #5E35B1;
+    --couleur-accent: #FF8F00;
+    --couleur-bleu: #1565C0;
+    --couleur-rouge: #C62828;
+    --couleur-texte: #212121;
+    --couleur-texte-clair: #757575;
+    --couleur-fond: #F5F5F5;
+    --couleur-blanc: #FFFFFF;
+    --couleur-danger: #FC466B;
+    --couleur-succes: #43A047;
+    --couleur-or: #FFD600;
+    --ombre-douce: 0 2px 10px rgba(0,0,0,0.1);
+    --ombre-forte: 0 4px 20px rgba(0,0,0,0.15);
+    --rayon: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--couleur-fond);
+    color: var(--couleur-texte);
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+.cache { display: none !important; }
+h1, h2, h3 { font-weight: 700; }
+
+/* ===== EN-TÊTE ===== */
+.en-tete {
+    background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+    color: #fff;
+    text-align: center;
+    padding: 18px 16px 14px;
+}
+.en-tete h1 { font-size: 1.5em; }
+.en-tete .version { font-size: 0.85em; opacity: 0.8; margin-top: 2px; }
+
+/* ===== SECTIONS ===== */
+.section {
+    background: var(--couleur-blanc);
+    border-radius: var(--rayon);
+    padding: 20px 16px;
+    margin: 12px;
+    box-shadow: var(--ombre-douce);
+    border-left: 5px solid var(--couleur-primaire);
+}
+.section h2 {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 1.1em; margin-bottom: 14px; color: var(--couleur-primaire);
+}
+.section h2::before {
+    content: ''; width: 6px; height: 24px;
+    background: var(--couleur-primaire); border-radius: 3px; flex-shrink: 0;
+}
+.section-combat { border-left-color: var(--couleur-rouge); }
+.section-combat h2, .section-combat h2::before { color: var(--couleur-rouge); }
+.section-combat h2::before { background: var(--couleur-rouge); }
+.section-groupe { border-left-color: var(--couleur-accent); }
+.section-groupe h2 { color: var(--couleur-accent); }
+.section-groupe h2::before { background: var(--couleur-accent); }
+
+/* ===== FORMULAIRES ===== */
+.form-row {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: flex-end; margin-bottom: 12px;
+}
+.form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
+.form-group label { font-size: 0.85em; font-weight: 600; color: var(--couleur-texte-clair); }
+input[type="text"], input[type="date"], select {
+    padding: 10px 12px; border: 2px solid #E0E0E0; border-radius: 10px;
+    font-size: 1em; font-family: inherit; background: #FAFAFA;
+    transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: var(--couleur-primaire); outline: none; }
+
+/* ===== STEPPER ===== */
+.stepper-nombre { display: flex; align-items: stretch; gap: 6px; }
+.stepper-nombre input {
+    text-align: center; flex: 1; min-width: 0; width: 50px;
+    -moz-appearance: textfield;
+}
+.stepper-nombre input::-webkit-inner-spin-button,
+.stepper-nombre input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.stepper-btn {
+    flex-shrink: 0; width: 44px; min-height: 44px;
+    border: 2px solid #E0E0E0; border-radius: 10px;
+    background: #FAFAFA; font-size: 1.3em; font-weight: 700; cursor: pointer;
+}
+.stepper-btn:active { background: var(--couleur-primaire); color: #fff; border-color: var(--couleur-primaire); }
+
+/* ===== BOUTONS ===== */
+.bouton {
+    padding: 12px 24px; border: none; border-radius: 25px;
+    font-size: 1em; font-weight: 600; cursor: pointer;
+    transition: all 0.2s ease; box-shadow: var(--ombre-douce);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    width: 100%; min-height: 48px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.bouton:active { transform: scale(0.97); }
+.bouton-primaire { background: var(--couleur-primaire); color: #fff; }
+.bouton-secondaire { background: var(--couleur-secondaire); color: #fff; }
+.bouton-danger { background: var(--couleur-danger); color: #fff; }
+.bouton-succes { background: var(--couleur-succes); color: #fff; }
+.bouton-outline {
+    background: transparent; border: 2px solid var(--couleur-primaire);
+    color: var(--couleur-primaire);
+}
+.bouton[disabled] { opacity: 0.4; pointer-events: none; }
+.bouton-sm { padding: 8px 16px; font-size: 0.9em; min-height: 40px; border-radius: 20px; }
+
+/* ===== TAGS ÉLÈVES ===== */
+.tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.tag-eleve {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; background: #E3F2FD; border-radius: 20px;
+    font-size: 0.9em; font-weight: 500;
+}
+.tag-eleve .suppr-tag {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: none; background: rgba(0,0,0,0.15); color: #fff;
+    font-size: 0.8em; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.tag-eleve .suppr-tag:active { background: var(--couleur-danger); }
+.ajout-eleve { display: flex; gap: 8px; margin-top: 8px; }
+.ajout-eleve input { flex: 1; }
+.ajout-eleve button {
+    width: 44px; min-height: 44px; border-radius: 50%;
+    border: none; background: var(--couleur-succes); color: #fff;
+    font-size: 1.4em; cursor: pointer;
+}
+
+/* ===== SÉLECTION DURÉE / MODE ===== */
+.radio-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.radio-pill {
+    flex: 1; min-width: 70px; text-align: center;
+    padding: 10px 8px; border: 2px solid #E0E0E0; border-radius: 12px;
+    background: #FAFAFA; cursor: pointer; font-weight: 600;
+    font-size: 0.9em; transition: all 0.2s;
+}
+.radio-pill.active {
+    background: var(--couleur-primaire); color: #fff;
+    border-color: var(--couleur-primaire);
+}
+
+/* ===== LISTE MATCHS ===== */
+.match-list { display: flex; flex-direction: column; gap: 8px; }
+.match-card {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 12px; border-radius: 12px; background: #FAFAFA;
+    border: 2px solid #E0E0E0; transition: all 0.2s;
+}
+.match-card.en-cours { border-color: var(--couleur-accent); background: #FFF8E1; }
+.match-card.termine { border-color: var(--couleur-succes); background: #E8F5E9; opacity: 0.85; }
+.match-card.forfait { border-color: #BDBDBD; background: #EEEEEE; opacity: 0.6; }
+.match-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: 700; font-size: 0.95em;
+}
+.match-versus {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-size: 1.05em; font-weight: 700; padding: 4px 0;
+}
+.match-versus .nom-bleu { color: var(--couleur-bleu); }
+.match-versus .nom-rouge { color: var(--couleur-rouge); }
+.match-roles { font-size: 0.8em; color: var(--couleur-texte-clair); }
+.match-score {
+    display: flex; justify-content: center; gap: 16px;
+    font-size: 1em; font-weight: 700;
+}
+.match-score .score-bleu { color: var(--couleur-bleu); }
+.match-score .score-rouge { color: var(--couleur-rouge); }
+.match-btn-demarrer {
+    align-self: flex-end; padding: 6px 16px;
+    border: none; border-radius: 15px; font-weight: 700;
+    background: var(--couleur-accent); color: #fff;
+    cursor: pointer; font-size: 0.85em;
+}
+
+/* ===== CLASSEMENT ===== */
+.classement-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9em;
+}
+.classement-table th {
+    background: var(--couleur-primaire); color: #fff;
+    padding: 10px 8px; text-align: center; font-size: 0.85em;
+}
+.classement-table td {
+    padding: 10px 8px; text-align: center;
+    border-bottom: 1px solid #E0E0E0;
+}
+.classement-table tr:nth-child(even) { background: #F5F5F5; }
+.classement-table .rang-1 { background: #FFF9C4; font-weight: 700; }
+.classement-table .rang-2 { background: #F5F5F5; }
+.classement-table .rang-3 { background: #FBE9E7; }
+
+/* ===== ÉCRAN COMBAT ===== */
+.combat-header {
+    background: linear-gradient(135deg, var(--couleur-bleu), var(--couleur-rouge));
+    color: #fff; text-align: center; padding: 12px 16px;
+}
+.combat-header h2 { font-size: 1.15em; margin-bottom: 4px; }
+.combat-roles { font-size: 0.85em; opacity: 0.9; }
+
+/* Timer */
+.timer-zone {
+    text-align: center; padding: 16px;
+    background: var(--couleur-blanc); margin: 0 12px;
+    border-radius: 0 0 var(--rayon) var(--rayon);
+    box-shadow: var(--ombre-douce);
+}
+.timer-affichage {
+    font-family: 'Courier New', monospace;
+    font-size: 3em; font-weight: 700;
+    color: var(--couleur-texte); letter-spacing: 2px;
+}
+.timer-affichage.alerte { color: var(--couleur-danger); }
+.timer-affichage.salut { color: var(--couleur-accent); }
+.timer-message {
+    font-size: 1.3em; font-weight: 700; margin: 4px 0;
+    min-height: 1.5em;
+}
+.timer-message.msg-salut { color: var(--couleur-accent); }
+.timer-message.msg-luttez { color: var(--couleur-succes); font-size: 1.6em; }
+.timer-message.msg-stop { color: var(--couleur-danger); font-size: 1.6em; }
+.timer-boutons { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+.timer-btn {
+    width: 52px; height: 52px; border-radius: 50%; border: none;
+    font-size: 1.3em; cursor: pointer; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+}
+.timer-btn-start { background: var(--couleur-succes); }
+.timer-btn-pause { background: var(--couleur-accent); }
+.timer-btn-reset { background: #9E9E9E; }
+
+/* Scoring */
+.scoring-zone {
+    display: flex; gap: 8px; padding: 8px 12px; align-items: flex-start;
+}
+.scoring-col {
+    flex: 1; border-radius: var(--rayon); padding: 12px 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.scoring-col-bleu { background: #E3F2FD; border: 3px solid var(--couleur-bleu); }
+.scoring-col-rouge { background: #FFEBEE; border: 3px solid var(--couleur-rouge); }
+.scoring-nom {
+    font-size: 1em; font-weight: 700;
+    padding: 4px 14px; border-radius: 15px; color: #fff;
+}
+.scoring-col-bleu .scoring-nom { background: var(--couleur-bleu); }
+.scoring-col-rouge .scoring-nom { background: var(--couleur-rouge); }
+.scoring-points {
+    font-family: 'Courier New', monospace;
+    font-size: 2.8em; font-weight: 700; line-height: 1;
+}
+.scoring-col-bleu .scoring-points { color: var(--couleur-bleu); }
+.scoring-col-rouge .scoring-points { color: var(--couleur-rouge); }
+.scoring-avert {
+    font-size: 0.85em; padding: 3px 10px;
+    border-radius: 10px; background: #FFF3E0; color: #E65100;
+    font-weight: 600;
+}
+.scoring-avert.carton-rouge { background: var(--couleur-danger); color: #fff; }
+.scoring-btns { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+.btn-action {
+    width: 100%; padding: 10px 8px; border: none; border-radius: 10px;
+    font-size: 0.85em; font-weight: 700; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    min-height: 44px; transition: transform 0.1s;
+    color: #fff;
+}
+.btn-action:active { transform: scale(0.95); }
+.btn-tomber { background: #E65100; }
+.btn-med { background: #7B1FA2; }
+.btn-dmed { background: #AB47BC; }
+.btn-pa { background: #546E7A; }
+.btn-penalite { background: var(--couleur-danger); }
+.btn-action .pts { font-size: 1em; opacity: 0.9; }
+.btn-annuler {
+    width: 100%; padding: 8px; border: 2px solid #BDBDBD;
+    border-radius: 10px; background: transparent;
+    font-size: 0.85em; color: #757575; cursor: pointer;
+    min-height: 40px; font-weight: 600;
+}
+.btn-annuler:active { background: #EEEEEE; }
+
+.scoring-disabled .btn-action,
+.scoring-disabled .btn-annuler { opacity: 0.3; pointer-events: none; }
+.scoring-carton-rouge .btn-action { opacity: 0.3; pointer-events: none; }
+
+/* Historique */
+.historique-zone {
+    margin: 8px 12px; padding: 10px;
+    background: var(--couleur-blanc); border-radius: var(--rayon);
+    box-shadow: var(--ombre-douce); max-height: 120px; overflow-y: auto;
+}
+.historique-zone h3 { font-size: 0.9em; color: var(--couleur-texte-clair); margin-bottom: 6px; }
+.historique-ligne {
+    font-size: 0.8em; padding: 3px 0;
+    border-bottom: 1px solid #F0F0F0; display: flex; gap: 8px;
+}
+.historique-temps { color: var(--couleur-texte-clair); font-family: 'Courier New', monospace; min-width: 40px; }
+
+/* Validation combat */
+.combat-actions {
+    padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ===== MODALES ===== */
+.modale-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 16px;
+}
+.modale {
+    background: var(--couleur-blanc); border-radius: var(--rayon);
+    width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--ombre-forte);
+}
+.modale-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; border-bottom: 1px solid #E0E0E0;
+}
+.modale-header h3 { font-size: 1.1em; }
+.btn-fermer {
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: #EEEEEE; font-size: 1.3em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.modale-body { padding: 16px; }
+.modale-footer { padding: 12px 16px; display: flex; gap: 10px; }
+.modale-footer .bouton { flex: 1; }
+
+/* ===== PIED DE PAGE ===== */
+.pied-page {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-top: 30px; padding: 20px 16px;
+    border-top: 1px solid rgba(128,128,128,0.3);
+}
+.pied-page-logo { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; }
+.pied-page p { font-size: 0.85em; opacity: 0.7; }
+
+/* ===== ACTIONS SÉANCE ===== */
+.actions-seance {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    padding: 0 12px 12px; justify-content: center;
+}
+.actions-seance .bouton { width: auto; flex: 1; min-width: 140px; }
+
+/* ===== QR CODE ===== */
+.qr-container { text-align: center; margin: 16px 0; }
+.qr-container canvas { max-width: 250px; border: 4px solid var(--couleur-texte); border-radius: 8px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .en-tete h1 { font-size: 1.2em; }
+    .section { padding: 14px 12px; margin: 8px; }
+    .timer-affichage { font-size: 2.2em; }
+    .scoring-points { font-size: 2em; }
+    .btn-action { font-size: 0.8em; min-height: 40px; padding: 8px 6px; }
+}
+@media (min-width: 768px) {
+    .form-row { flex-wrap: nowrap; }
+    .scoring-zone { padding: 12px 24px; gap: 16px; }
+    .scoring-col { padding: 16px; }
+    .scoring-points { font-size: 3.5em; }
+}
+
+/* ===== ANIMATION FLASH SCORE ===== */
+@keyframes flash-score {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+.score-flash { animation: flash-score 0.3s ease; }
+
+/* ===== BADGE GROUPE ===== */
+.badge-groupe {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 10px; font-size: 0.75em; font-weight: 700;
+    background: var(--couleur-accent); color: #fff;
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== ÉCRAN 1 : CONFIGURATION ==================== -->
+<div id="ecran-config">
+    <div class="en-tete">
+        <h1>Compteur Lutte</h1>
+        <p class="version">Version 0.1</p>
+    </div>
+
+    <!-- Séance -->
+    <div class="section">
+        <h2>Informations de la séance</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="inp-classe">Classe</label>
+                <input type="text" id="inp-classe" placeholder="5eB" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="inp-date">Date</label>
+                <input type="date" id="inp-date">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="max-width:180px">
+                <label>Enceinte</label>
+                <div class="stepper-nombre">
+                    <button type="button" class="stepper-btn" onclick="ajusterStepper('inp-enceinte',-1)" aria-label="Diminuer l'enceinte">&minus;</button>
+                    <input type="number" id="inp-enceinte" value="1" min="1" max="6" readonly>
+                    <button type="button" class="stepper-btn" onclick="ajusterStepper('inp-enceinte',1)" aria-label="Augmenter l'enceinte">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paramètres -->
+    <div class="section">
+        <h2>Paramètres du combat</h2>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Durée du combat</label>
+            <div class="radio-pills" id="pills-duree">
+                <div class="radio-pill active" data-val="60" onclick="choisirPill(this,'pills-duree')">1 min</div>
+                <div class="radio-pill" data-val="90" onclick="choisirPill(this,'pills-duree')">1 min 30</div>
+                <div class="radio-pill" data-val="120" onclick="choisirPill(this,'pills-duree')">2 min</div>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Délai avant combat (secondes)</label>
+            <div class="stepper-nombre" style="max-width:180px">
+                <button type="button" class="stepper-btn" onclick="ajusterStepper('inp-delai',-1)" aria-label="Diminuer le délai">&minus;</button>
+                <input type="number" id="inp-delai" value="5" min="3" max="10" readonly>
+                <button type="button" class="stepper-btn" onclick="ajusterStepper('inp-delai',1)" aria-label="Augmenter le délai">+</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Mode de classement</label>
+            <div class="radio-pills" id="pills-classement">
+                <div class="radio-pill active" data-val="points" onclick="choisirPill(this,'pills-classement')">Total points</div>
+                <div class="radio-pill" data-val="victoires" onclick="choisirPill(this,'pills-classement')">Victoires (3/1/0)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Groupes -->
+    <div class="section section-groupe">
+        <h2>Groupes</h2>
+        <div class="form-group" style="max-width:220px;margin-bottom:14px">
+            <label>Nombre de groupes sur cette enceinte</label>
+            <div class="stepper-nombre">
+                <button type="button" class="stepper-btn" onclick="ajusterNbGroupes(-1)" aria-label="Diminuer les groupes">&minus;</button>
+                <input type="number" id="inp-nb-groupes" value="1" min="1" max="3" readonly>
+                <button type="button" class="stepper-btn" onclick="ajusterNbGroupes(1)" aria-label="Augmenter les groupes">+</button>
+            </div>
+        </div>
+        <div id="zone-groupes"></div>
+    </div>
+
+    <!-- Bouton Générer -->
+    <div style="padding:0 12px 12px">
+        <button class="bouton bouton-primaire" onclick="genererMatchs()" id="btn-generer">Générer les combats</button>
+    </div>
+
+    <!-- Liste matchs -->
+    <div class="section section-combat cache" id="section-matchs">
+        <h2>Combats</h2>
+        <div id="zone-matchs" class="match-list"></div>
+    </div>
+
+    <!-- Classement -->
+    <div class="section cache" id="section-classement">
+        <h2>Classement</h2>
+        <div id="zone-classement"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-seance">
+        <button class="bouton bouton-outline bouton-sm" onclick="exporterJSON()">Exporter JSON</button>
+        <button class="bouton bouton-outline bouton-sm" onclick="document.getElementById('import-json').click()">Importer JSON</button>
+        <input type="file" id="import-json" accept=".json" class="cache" onchange="importerJSON(event)">
+        <button class="bouton bouton-danger bouton-sm" onclick="confirmerNouvelle()">Nouvelle séance</button>
+    </div>
+    <div class="actions-seance cache" id="zone-relancer">
+        <button class="bouton bouton-secondaire bouton-sm" onclick="relancerMatchs()">Relancer les combats (rotation suivante)</button>
+    </div>
+    <div class="actions-seance cache" id="zone-qr-btn">
+        <button class="bouton bouton-succes bouton-sm" onclick="exporterQR()">Exporter classement (QR)</button>
+    </div>
+
+    <!-- Pied de page -->
+    <div class="pied-page">
+        <img src="logo-outils-eps.png" alt="Logo outils-eps.fr" class="pied-page-logo">
+        <p>https://outils-eps.fr par Nathalie Prenois</p>
+    </div>
+</div>
+
+<!-- ==================== ÉCRAN 2 : COMBAT ==================== -->
+<div id="ecran-combat" class="cache">
+    <div class="combat-header">
+        <h2 id="combat-titre">Combat 1/6 — G1</h2>
+        <div class="combat-roles" id="combat-roles"></div>
+    </div>
+
+    <div class="timer-zone">
+        <div class="timer-message" id="timer-msg"></div>
+        <div class="timer-affichage" id="timer-display">1:00</div>
+        <div class="timer-boutons">
+            <button class="timer-btn timer-btn-start" id="btn-timer-start" onclick="toggleTimer()" aria-label="Démarrer">&#9654;</button>
+            <button class="timer-btn timer-btn-reset" onclick="resetTimer()" aria-label="Réinitialiser">&#8634;</button>
+        </div>
+    </div>
+
+    <div class="scoring-zone" id="scoring-zone">
+        <div class="scoring-col scoring-col-bleu" id="col-l1">
+            <div class="scoring-nom" id="nom-l1">---</div>
+            <div class="scoring-points" id="pts-l1">0</div>
+            <div class="scoring-avert" id="avert-l1">0 avert.</div>
+            <div class="scoring-btns">
+                <button class="btn-action btn-tomber" onclick="marquerAction(1,'tomber')"><span>Tomber</span><span class="pts">+50</span></button>
+                <button class="btn-action btn-med" onclick="marquerAction(1,'miseDanger')"><span>Mise en danger</span><span class="pts">+10</span></button>
+                <button class="btn-action btn-dmed" onclick="marquerAction(1,'demiMiseDanger')"><span>1/2 Mise en D.</span><span class="pts">+5</span></button>
+                <button class="btn-action btn-pa" onclick="marquerAction(1,'passageArriere')"><span>Pass. arrière</span><span class="pts">+2</span></button>
+                <button class="btn-action btn-penalite" onclick="marquerAction(1,'penalite')"><span>Pénalité</span><span class="pts">&minus;10</span></button>
+            </div>
+            <button class="btn-annuler" onclick="annulerAction(1)">&#8617; Annuler</button>
+        </div>
+        <div class="scoring-col scoring-col-rouge" id="col-l2">
+            <div class="scoring-nom" id="nom-l2">---</div>
+            <div class="scoring-points" id="pts-l2">0</div>
+            <div class="scoring-avert" id="avert-l2">0 avert.</div>
+            <div class="scoring-btns">
+                <button class="btn-action btn-tomber" onclick="marquerAction(2,'tomber')"><span>Tomber</span><span class="pts">+50</span></button>
+                <button class="btn-action btn-med" onclick="marquerAction(2,'miseDanger')"><span>Mise en danger</span><span class="pts">+10</span></button>
+                <button class="btn-action btn-dmed" onclick="marquerAction(2,'demiMiseDanger')"><span>1/2 Mise en D.</span><span class="pts">+5</span></button>
+                <button class="btn-action btn-pa" onclick="marquerAction(2,'passageArriere')"><span>Pass. arrière</span><span class="pts">+2</span></button>
+                <button class="btn-action btn-penalite" onclick="marquerAction(2,'penalite')"><span>Pénalité</span><span class="pts">&minus;10</span></button>
+            </div>
+            <button class="btn-annuler" onclick="annulerAction(2)">&#8617; Annuler</button>
+        </div>
+    </div>
+
+    <div class="historique-zone">
+        <h3>Historique des actions</h3>
+        <div id="zone-historique"></div>
+    </div>
+
+    <div class="combat-actions">
+        <button class="bouton bouton-succes" onclick="validerCombat()">Valider le combat</button>
+        <button class="bouton bouton-outline bouton-sm" onclick="retourSansValider()">Retour sans valider</button>
+    </div>
+</div>
+
+<!-- ==================== MODALE CONFIRMATION ==================== -->
+<div id="modale-confirm" class="modale-overlay cache">
+    <div class="modale">
+        <div class="modale-header">
+            <h3 id="confirm-titre">Confirmation</h3>
+            <button class="btn-fermer" onclick="fermerModale('modale-confirm')">&times;</button>
+        </div>
+        <div class="modale-body">
+            <p id="confirm-message"></p>
+        </div>
+        <div class="modale-footer">
+            <button class="bouton bouton-outline bouton-sm" onclick="fermerModale('modale-confirm')">Annuler</button>
+            <button class="bouton bouton-danger bouton-sm" id="confirm-btn" onclick="">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE VALIDATION COMBAT ==================== -->
+<div id="modale-validation" class="modale-overlay cache">
+    <div class="modale">
+        <div class="modale-header">
+            <h3>Validation du combat</h3>
+            <button class="btn-fermer" onclick="fermerModale('modale-validation')">&times;</button>
+        </div>
+        <div class="modale-body" id="validation-body"></div>
+        <div class="modale-footer">
+            <button class="bouton bouton-outline bouton-sm" onclick="fermerModale('modale-validation')">Corriger</button>
+            <button class="bouton bouton-succes bouton-sm" onclick="confirmerValidation()">Valider</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE QR ==================== -->
+<div id="modale-qr" class="modale-overlay cache">
+    <div class="modale">
+        <div class="modale-header">
+            <h3>Classement — QR Code</h3>
+            <button class="btn-fermer" onclick="fermerModale('modale-qr')">&times;</button>
+        </div>
+        <div class="modale-body qr-container" id="zone-qr"></div>
+        <div class="modale-footer">
+            <button class="bouton bouton-primaire bouton-sm" onclick="fermerModale('modale-qr')">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+/* ========== CONSTANTES ========== */
+var ACTIONS = {
+    tomber:          { label: 'Tomber',          pts: 50 },
+    miseDanger:      { label: 'Mise en danger',  pts: 10 },
+    demiMiseDanger:  { label: '1/2 Mise en D.',  pts: 5 },
+    passageArriere:  { label: 'Pass. arrière',   pts: 2 },
+    penalite:        { label: 'Pénalité',        pts: -10 }
+};
+var CLE_STOCKAGE = 'compteurLutte_seance';
+
+/* ========== ÉTAT ========== */
+var etat = creerEtatVide();
+
+function creerEtatVide() {
+    return {
+        classe: '',
+        date: new Date().toISOString().slice(0, 10),
+        enceinte: 1,
+        dureeCombat: 60,
+        delaiDepart: 5,
+        modeClassement: 'points',
+        groupes: [{ id: 'G1', eleves: [] }],
+        matchs: [],
+        disqualifies: [],
+        currentMatch: -1,
+        rotation: 1
+    };
+}
+
+/* ========== UTILITAIRES ========== */
+function escH(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function formatTemps(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function beep(freq, dur) {
+    try {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq || 800;
+        gain.gain.value = 0.3;
+        osc.start();
+        setTimeout(function() { osc.stop(); ctx.close(); }, dur || 200);
+    } catch(e) {}
+}
+
+function ajusterStepper(id, delta) {
+    var inp = document.getElementById(id);
+    var v = parseInt(inp.value) + delta;
+    var mi = parseInt(inp.min), ma = parseInt(inp.max);
+    if (v < mi || v > ma) return;
+    inp.value = v;
+    lireConfig();
+    sauvegarder();
+}
+
+function choisirPill(el, containerId) {
+    var pills = document.getElementById(containerId).children;
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    el.classList.add('active');
+    lireConfig();
+    sauvegarder();
+}
+
+/* ========== GESTION GROUPES ========== */
+function ajusterNbGroupes(delta) {
+    var inp = document.getElementById('inp-nb-groupes');
+    var n = parseInt(inp.value) + delta;
+    if (n < 1 || n > 3) return;
+    inp.value = n;
+    while (etat.groupes.length < n) {
+        var idx = etat.groupes.length + 1;
+        etat.groupes.push({ id: 'G' + idx, eleves: [] });
+    }
+    while (etat.groupes.length > n) etat.groupes.pop();
+    afficherGroupes();
+    sauvegarder();
+}
+
+function afficherGroupes() {
+    var zone = document.getElementById('zone-groupes');
+    var html = '';
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        html += '<div style="margin-bottom:16px;padding:12px;background:#FFFDE7;border-radius:12px">';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+        html += '<label style="font-weight:700">Groupe</label>';
+        html += '<input type="text" value="' + escH(gr.id) + '" style="width:70px;text-align:center;font-weight:700" ';
+        html += 'onchange="etat.groupes[' + g + '].id=this.value;sauvegarder()">';
+        html += '<span style="font-size:0.85em;color:#757575">(' + gr.eleves.length + ' élèves)</span>';
+        html += '</div>';
+        html += '<div class="tags-container" id="tags-g' + g + '">';
+        for (var e = 0; e < gr.eleves.length; e++) {
+            html += '<span class="tag-eleve">' + escH(gr.eleves[e]);
+            html += '<button class="suppr-tag" onclick="supprimerEleve(' + g + ',' + e + ')" aria-label="Supprimer">&times;</button>';
+            html += '</span>';
+        }
+        html += '</div>';
+        html += '<div class="ajout-eleve">';
+        html += '<input type="text" id="inp-eleve-' + g + '" placeholder="Prénom" autocomplete="off" ';
+        html += 'onkeydown="if(event.key===\'Enter\'){ajouterEleve(' + g + ');event.preventDefault()}">';
+        html += '<button onclick="ajouterEleve(' + g + ')" aria-label="Ajouter">+</button>';
+        html += '</div>';
+        html += '</div>';
+    }
+    zone.innerHTML = html;
+}
+
+function ajouterEleve(gi) {
+    var inp = document.getElementById('inp-eleve-' + gi);
+    var nom = inp.value.trim();
+    if (!nom) return;
+    var doublon = false;
+    for (var g = 0; g < etat.groupes.length; g++)
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++)
+            if (etat.groupes[g].eleves[e].toLowerCase() === nom.toLowerCase()) doublon = true;
+    if (doublon) { inp.style.borderColor = '#C62828'; return; }
+    etat.groupes[gi].eleves.push(nom);
+    inp.value = '';
+    inp.style.borderColor = '';
+    afficherGroupes();
+    sauvegarder();
+    setTimeout(function() { document.getElementById('inp-eleve-' + gi).focus(); }, 50);
+}
+
+function supprimerEleve(gi, ei) {
+    etat.groupes[gi].eleves.splice(ei, 1);
+    afficherGroupes();
+    sauvegarder();
+}
+
+/* ========== LECTURE CONFIG ========== */
+function lireConfig() {
+    etat.classe = document.getElementById('inp-classe').value.trim();
+    etat.date = document.getElementById('inp-date').value;
+    etat.enceinte = parseInt(document.getElementById('inp-enceinte').value);
+    etat.delaiDepart = parseInt(document.getElementById('inp-delai').value);
+    var pillDuree = document.querySelector('#pills-duree .radio-pill.active');
+    if (pillDuree) etat.dureeCombat = parseInt(pillDuree.getAttribute('data-val'));
+    var pillClass = document.querySelector('#pills-classement .radio-pill.active');
+    if (pillClass) etat.modeClassement = pillClass.getAttribute('data-val');
+}
+
+function ecrireConfig() {
+    document.getElementById('inp-classe').value = etat.classe;
+    document.getElementById('inp-date').value = etat.date;
+    document.getElementById('inp-enceinte').value = etat.enceinte;
+    document.getElementById('inp-delai').value = etat.delaiDepart;
+    document.getElementById('inp-nb-groupes').value = etat.groupes.length;
+    var pillsDuree = document.querySelectorAll('#pills-duree .radio-pill');
+    for (var i = 0; i < pillsDuree.length; i++) {
+        pillsDuree[i].classList.toggle('active', parseInt(pillsDuree[i].getAttribute('data-val')) === etat.dureeCombat);
+    }
+    var pillsClass = document.querySelectorAll('#pills-classement .radio-pill');
+    for (var i = 0; i < pillsClass.length; i++) {
+        pillsClass[i].classList.toggle('active', pillsClass[i].getAttribute('data-val') === etat.modeClassement);
+    }
+}
+
+/* ========== GÉNÉRATION MATCHS ========== */
+function genererMatchs() {
+    lireConfig();
+    var totalEleves = 0;
+    for (var g = 0; g < etat.groupes.length; g++) {
+        if (etat.groupes[g].eleves.length < 2) {
+            afficherMessage('Le groupe ' + escH(etat.groupes[g].id) + ' doit avoir au moins 2 élèves.');
+            return;
+        }
+        totalEleves += etat.groupes[g].eleves.length;
+    }
+    if (totalEleves < 4) {
+        afficherMessage('Il faut au moins 4 élèves au total (2 lutteurs + 1 arbitre + 1 juge).');
+        return;
+    }
+    if (etat.matchs.length > 0) {
+        var termine = 0;
+        for (var i = 0; i < etat.matchs.length; i++) if (etat.matchs[i].termine) termine++;
+        if (termine > 0) {
+            ouvrirConfirmation('Régénérer les combats',
+                'Attention : ' + termine + ' combat(s) déjà terminé(s) seront perdus. Continuer ?',
+                function() { faireGeneration(); });
+            return;
+        }
+    }
+    faireGeneration();
+}
+
+function faireGeneration() {
+    etat.matchs = [];
+    etat.disqualifies = [];
+    etat.currentMatch = -1;
+    etat.rotation = 1;
+
+    var groupeMatchs = {};
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        groupeMatchs[gr.id] = [];
+        for (var i = 0; i < gr.eleves.length; i++) {
+            for (var j = i + 1; j < gr.eleves.length; j++) {
+                groupeMatchs[gr.id].push({ groupeId: gr.id, lutteur1: gr.eleves[i], lutteur2: gr.eleves[j] });
+            }
+        }
+    }
+
+    var ids = Object.keys(groupeMatchs);
+    var round = 0, continuer = true;
+    while (continuer) {
+        continuer = false;
+        for (var k = 0; k < ids.length; k++) {
+            if (round < groupeMatchs[ids[k]].length) {
+                etat.matchs.push(groupeMatchs[ids[k]][round]);
+                continuer = true;
+            }
+        }
+        round++;
+    }
+
+    var roleCounts = {};
+    var tousEleves = [];
+    for (var g = 0; g < etat.groupes.length; g++) {
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++) {
+            var nom = etat.groupes[g].eleves[e];
+            roleCounts[nom] = { arbitre: 0, juge: 0, marqueur: 0 };
+            tousEleves.push({ nom: nom, groupeId: etat.groupes[g].id });
+        }
+    }
+
+    for (var m = 0; m < etat.matchs.length; m++) {
+        var match = etat.matchs[m];
+        var fighters = [match.lutteur1, match.lutteur2];
+        var dispo = [];
+        for (var t = 0; t < tousEleves.length; t++) {
+            if (fighters.indexOf(tousEleves[t].nom) === -1) {
+                dispo.push({ nom: tousEleves[t].nom, groupeId: tousEleves[t].groupeId });
+            }
+        }
+
+        function pickBest(arr, role, fgid) {
+            arr.sort(function(a, b) {
+                var ad = a.groupeId !== fgid ? 0 : 1;
+                var bd = b.groupeId !== fgid ? 0 : 1;
+                if (ad !== bd) return ad - bd;
+                return (roleCounts[a.nom][role] || 0) - (roleCounts[b.nom][role] || 0);
+            });
+            return arr.length > 0 ? arr[0] : null;
+        }
+
+        function retirer(arr, nom) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].nom === nom) { arr.splice(i, 1); return; }
+            }
+        }
+
+        var arb = pickBest(dispo.slice(), 'arbitre', match.groupeId);
+        if (arb) { match.arbitre = arb.nom; roleCounts[arb.nom].arbitre++; retirer(dispo, arb.nom); }
+
+        var j1 = pickBest(dispo.slice(), 'juge', match.groupeId);
+        if (j1) { match.juge1 = j1.nom; roleCounts[j1.nom].juge++; retirer(dispo, j1.nom); }
+
+        var j2 = pickBest(dispo.slice(), 'juge', match.groupeId);
+        if (j2) { match.juge2 = j2.nom; roleCounts[j2.nom].juge++; retirer(dispo, j2.nom); }
+
+        var mrq = pickBest(dispo.slice(), 'marqueur', match.groupeId);
+        if (mrq) { match.marqueur = mrq.nom; roleCounts[mrq.nom].marqueur++; retirer(dispo, mrq.nom); }
+
+        match.id = m;
+        match.rotation = etat.rotation;
+        match.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.avert1 = 0; match.avert2 = 0;
+        match.cartonRouge1 = false; match.cartonRouge2 = false;
+        match.termine = false; match.forfait = false;
+        match.vainqueur = null;
+        match.historique = [];
+    }
+
+    afficherListeMatchs();
+    sauvegarder();
+}
+
+function peutRelancer() {
+    if (etat.matchs.length === 0 || etat.rotation >= 3) return false;
+    if (etat.disqualifies.length > 0) return false;
+    var tousTermines = true;
+    for (var i = 0; i < etat.matchs.length; i++) {
+        if (!etat.matchs[i].termine) { tousTermines = false; break; }
+    }
+    if (!tousTermines) return false;
+    for (var g = 0; g < etat.groupes.length; g++) {
+        if (etat.groupes[g].eleves.length <= 3 && etat.groupes[g].eleves.length >= 2) return true;
+    }
+    return false;
+}
+
+function relancerMatchs() {
+    etat.rotation++;
+    var roleCounts = {};
+    var tousEleves = [];
+    for (var g = 0; g < etat.groupes.length; g++) {
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++) {
+            var nom = etat.groupes[g].eleves[e];
+            roleCounts[nom] = { arbitre: 0, juge: 0, marqueur: 0 };
+            tousEleves.push({ nom: nom, groupeId: etat.groupes[g].id });
+        }
+    }
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var mx = etat.matchs[i];
+        if (mx.arbitre && roleCounts[mx.arbitre]) roleCounts[mx.arbitre].arbitre++;
+        if (mx.juge1 && roleCounts[mx.juge1]) roleCounts[mx.juge1].juge++;
+        if (mx.juge2 && roleCounts[mx.juge2]) roleCounts[mx.juge2].juge++;
+        if (mx.marqueur && roleCounts[mx.marqueur]) roleCounts[mx.marqueur].marqueur++;
+    }
+
+    var nouveaux = [];
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        var paires = [];
+        for (var i = 0; i < gr.eleves.length; i++) {
+            for (var j = i + 1; j < gr.eleves.length; j++) {
+                paires.push({ groupeId: gr.id, lutteur1: gr.eleves[i], lutteur2: gr.eleves[j] });
+            }
+        }
+        for (var i = paires.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = paires[i]; paires[i] = paires[j]; paires[j] = tmp;
+        }
+        if (etat.rotation % 2 === 0) {
+            for (var p = 0; p < paires.length; p++) {
+                var t = paires[p].lutteur1;
+                paires[p].lutteur1 = paires[p].lutteur2;
+                paires[p].lutteur2 = t;
+            }
+        }
+        for (var p = 0; p < paires.length; p++) nouveaux.push(paires[p]);
+    }
+
+    for (var m = 0; m < nouveaux.length; m++) {
+        var match = nouveaux[m];
+        var fighters = [match.lutteur1, match.lutteur2];
+        var dispo = [];
+        for (var t = 0; t < tousEleves.length; t++) {
+            if (fighters.indexOf(tousEleves[t].nom) === -1) {
+                dispo.push({ nom: tousEleves[t].nom, groupeId: tousEleves[t].groupeId });
+            }
+        }
+
+        function pickBest(arr, role, fgid) {
+            arr.sort(function(a, b) {
+                var ad = a.groupeId !== fgid ? 0 : 1;
+                var bd = b.groupeId !== fgid ? 0 : 1;
+                if (ad !== bd) return ad - bd;
+                return (roleCounts[a.nom][role] || 0) - (roleCounts[b.nom][role] || 0);
+            });
+            return arr.length > 0 ? arr[0] : null;
+        }
+        function retirer(arr, nom) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].nom === nom) { arr.splice(i, 1); return; }
+            }
+        }
+
+        var arb = pickBest(dispo.slice(), 'arbitre', match.groupeId);
+        if (arb) { match.arbitre = arb.nom; roleCounts[arb.nom].arbitre++; retirer(dispo, arb.nom); }
+        var j1 = pickBest(dispo.slice(), 'juge', match.groupeId);
+        if (j1) { match.juge1 = j1.nom; roleCounts[j1.nom].juge++; retirer(dispo, j1.nom); }
+        var j2 = pickBest(dispo.slice(), 'juge', match.groupeId);
+        if (j2) { match.juge2 = j2.nom; roleCounts[j2.nom].juge++; retirer(dispo, j2.nom); }
+        var mrq = pickBest(dispo.slice(), 'marqueur', match.groupeId);
+        if (mrq) { match.marqueur = mrq.nom; roleCounts[mrq.nom].marqueur++; retirer(dispo, mrq.nom); }
+
+        match.id = etat.matchs.length + m;
+        match.rotation = etat.rotation;
+        match.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.avert1 = 0; match.avert2 = 0;
+        match.cartonRouge1 = false; match.cartonRouge2 = false;
+        match.termine = false; match.forfait = false;
+        match.vainqueur = null;
+        match.historique = [];
+    }
+
+    for (var n = 0; n < nouveaux.length; n++) etat.matchs.push(nouveaux[n]);
+    afficherListeMatchs();
+    sauvegarder();
+}
+
+/* ========== AFFICHAGE LISTE MATCHS ========== */
+function afficherListeMatchs() {
+    var sec = document.getElementById('section-matchs');
+    if (etat.matchs.length === 0) { sec.classList.add('cache'); return; }
+    sec.classList.remove('cache');
+    var zone = document.getElementById('zone-matchs');
+    var html = '';
+    var rotationAffichee = 0;
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var m = etat.matchs[i];
+        if (m.rotation && m.rotation > rotationAffichee) {
+            rotationAffichee = m.rotation;
+            if (rotationAffichee > 1) {
+                html += '<div style="text-align:center;margin:16px 0 8px;padding:8px;background:var(--couleur-primaire);color:white;border-radius:10px;font-weight:700">Rotation ' + rotationAffichee + '</div>';
+            }
+        }
+        var cls = m.termine ? (m.forfait ? 'forfait' : 'termine') : '';
+        html += '<div class="match-card ' + cls + '">';
+        html += '<div class="match-header">';
+        html += '<span>Combat ' + (i + 1) + '/' + etat.matchs.length + '</span>';
+        html += '<span class="badge-groupe">' + escH(m.groupeId) + '</span>';
+        html += '</div>';
+
+        html += '<div class="match-versus">';
+        html += '<span class="nom-bleu">' + escH(m.lutteur1) + '</span>';
+        html += '<span style="font-size:0.85em;color:#757575">vs</span>';
+        html += '<span class="nom-rouge">' + escH(m.lutteur2) + '</span>';
+        html += '</div>';
+
+        html += '<div class="match-roles">';
+        var roles = [];
+        if (m.arbitre) roles.push('Arb: ' + escH(m.arbitre));
+        var juges = [];
+        if (m.juge1) juges.push(escH(m.juge1));
+        if (m.juge2) juges.push(escH(m.juge2));
+        if (juges.length) roles.push('Juges: ' + juges.join(', '));
+        if (m.marqueur) roles.push('Marq: ' + escH(m.marqueur));
+        html += roles.join(' | ');
+        html += '</div>';
+
+        if (m.termine) {
+            var s1 = calculerTotal(m.scores1);
+            var s2 = calculerTotal(m.scores2);
+            if (m.cartonRouge1) s1 = 0;
+            if (m.cartonRouge2) s2 = 0;
+            html += '<div class="match-score">';
+            html += '<span class="score-bleu">' + s1 + ' pts</span>';
+            html += '<span style="font-size:0.85em;color:#757575">—</span>';
+            html += '<span class="score-rouge">' + s2 + ' pts</span>';
+            html += '</div>';
+            if (m.vainqueur) {
+                html += '<div style="text-align:center;font-weight:700;font-size:0.9em;color:var(--couleur-succes)">';
+                html += 'Vainqueur : ' + escH(m.vainqueur);
+                html += '</div>';
+            } else if (!m.forfait) {
+                html += '<div style="text-align:center;font-weight:700;font-size:0.9em;color:var(--couleur-accent)">Match nul</div>';
+            }
+            if (m.cartonRouge1 || m.cartonRouge2) {
+                var nomDQ = m.cartonRouge1 ? m.lutteur1 : m.lutteur2;
+                html += '<div style="text-align:center;font-weight:700;font-size:0.9em;color:var(--couleur-danger)">Carton rouge : ' + escH(nomDQ) + '</div>';
+            }
+            if (m.forfait) {
+                html += '<div style="text-align:center;font-weight:700;font-size:0.9em;color:var(--couleur-danger)">Forfait (carton rouge)</div>';
+            }
+        } else {
+            html += '<button class="match-btn-demarrer" onclick="lancerCombat(' + i + ')">Commencer</button>';
+        }
+        html += '</div>';
+    }
+    zone.innerHTML = html;
+    verifierClassement();
+}
+
+function calculerTotal(scores) {
+    return scores.tomber * 50 + scores.miseDanger * 10 +
+           scores.demiMiseDanger * 5 + scores.passageArriere * 2 +
+           scores.penalite * (-10);
+}
+
+/* ========== CHRONOMÈTRE ========== */
+var timer = { intervalId: null, etat: 'IDLE', secondes: 60, delaiRestant: 0 };
+
+function lancerCombat(index) {
+    etat.currentMatch = index;
+    var m = etat.matchs[index];
+
+    document.getElementById('ecran-config').classList.add('cache');
+    document.getElementById('ecran-combat').classList.remove('cache');
+
+    document.getElementById('combat-titre').textContent =
+        'Combat ' + (index + 1) + '/' + etat.matchs.length + ' — ' + m.groupeId;
+
+    var rolesHtml = '';
+    if (m.arbitre) rolesHtml += 'Arbitre : ' + escH(m.arbitre);
+    var juges = [];
+    if (m.juge1) juges.push(escH(m.juge1));
+    if (m.juge2) juges.push(escH(m.juge2));
+    if (juges.length) rolesHtml += ' | Juges : ' + juges.join(', ');
+    if (m.marqueur) rolesHtml += ' | Marqueur : ' + escH(m.marqueur);
+    document.getElementById('combat-roles').innerHTML = rolesHtml;
+
+    document.getElementById('nom-l1').textContent = m.lutteur1;
+    document.getElementById('nom-l2').textContent = m.lutteur2;
+
+    timer.etat = 'IDLE';
+    timer.secondes = etat.dureeCombat;
+    timer.delaiRestant = 0;
+    majTimerUI();
+    majScoresUI();
+    majHistoriqueUI();
+    majScoringEnabled();
+
+    var btnStart = document.getElementById('btn-timer-start');
+    btnStart.innerHTML = '&#9654;';
+    btnStart.className = 'timer-btn timer-btn-start';
+    btnStart.disabled = false;
+
+    try { navigator.wakeLock.request('screen'); } catch(e) {}
+    try {
+        document.documentElement.requestFullscreen ?
+            document.documentElement.requestFullscreen() :
+            document.documentElement.webkitRequestFullscreen &&
+            document.documentElement.webkitRequestFullscreen();
+    } catch(e) {}
+}
+
+function toggleTimer() {
+    if (timer.etat === 'IDLE') {
+        timer.etat = 'SALUT';
+        timer.delaiRestant = etat.delaiDepart;
+        beep(600, 150);
+        demarrerInterval();
+    } else if (timer.etat === 'SALUT' || timer.etat === 'COMBAT') {
+        clearInterval(timer.intervalId);
+        timer.intervalId = null;
+        timer.etat = 'PAUSE';
+        majTimerUI();
+    } else if (timer.etat === 'PAUSE') {
+        demarrerInterval();
+        timer.etat = timer.secondes > 0 ? 'COMBAT' : 'TERMINE';
+    } else if (timer.etat === 'TERMINE') {
+        return;
+    }
+    majTimerUI();
+    majScoringEnabled();
+}
+
+function demarrerInterval() {
+    if (timer.intervalId) clearInterval(timer.intervalId);
+    timer.intervalId = setInterval(tickTimer, 1000);
+}
+
+function tickTimer() {
+    if (timer.etat === 'SALUT') {
+        timer.delaiRestant--;
+        if (timer.delaiRestant <= 0) {
+            timer.etat = 'COMBAT';
+            beep(1000, 400);
+        }
+        majTimerUI();
+        majScoringEnabled();
+    } else if (timer.etat === 'COMBAT') {
+        timer.secondes--;
+        if (timer.secondes <= 0) {
+            timer.secondes = 0;
+            timer.etat = 'TERMINE';
+            clearInterval(timer.intervalId);
+            timer.intervalId = null;
+            beep(500, 600);
+            setTimeout(function() { beep(500, 600); }, 700);
+        }
+        majTimerUI();
+        majScoringEnabled();
+    }
+}
+
+function resetTimer() {
+    if (timer.etat === 'COMBAT' || timer.etat === 'SALUT') {
+        ouvrirConfirmation('Réinitialiser le chrono',
+            'Réinitialiser le chronomètre ? Les scores seront conservés.',
+            function() { faireResetTimer(); });
+        return;
+    }
+    faireResetTimer();
+}
+
+function faireResetTimer() {
+    clearInterval(timer.intervalId);
+    timer.intervalId = null;
+    timer.etat = 'IDLE';
+    timer.secondes = etat.dureeCombat;
+    timer.delaiRestant = 0;
+    majTimerUI();
+    majScoringEnabled();
+}
+
+function majTimerUI() {
+    var display = document.getElementById('timer-display');
+    var msg = document.getElementById('timer-msg');
+    var btn = document.getElementById('btn-timer-start');
+
+    display.className = 'timer-affichage';
+    msg.className = 'timer-message';
+    msg.textContent = '';
+
+    if (timer.etat === 'IDLE') {
+        display.textContent = formatTemps(etat.dureeCombat);
+        btn.innerHTML = '&#9654;';
+        btn.className = 'timer-btn timer-btn-start';
+    } else if (timer.etat === 'SALUT') {
+        display.textContent = timer.delaiRestant.toString();
+        display.classList.add('salut');
+        msg.textContent = 'SALUEZ-VOUS !';
+        msg.classList.add('msg-salut');
+        btn.innerHTML = '&#9646;&#9646;';
+        btn.className = 'timer-btn timer-btn-pause';
+    } else if (timer.etat === 'COMBAT') {
+        display.textContent = formatTemps(timer.secondes);
+        if (timer.secondes <= 10) display.classList.add('alerte');
+        if (timer.secondes >= etat.dureeCombat - 2) {
+            msg.textContent = 'LUTTEZ !';
+            msg.classList.add('msg-luttez');
+        }
+        btn.innerHTML = '&#9646;&#9646;';
+        btn.className = 'timer-btn timer-btn-pause';
+    } else if (timer.etat === 'PAUSE') {
+        display.textContent = formatTemps(timer.secondes);
+        msg.textContent = 'PAUSE';
+        msg.style.color = 'var(--couleur-accent)';
+        btn.innerHTML = '&#9654;';
+        btn.className = 'timer-btn timer-btn-start';
+    } else if (timer.etat === 'TERMINE') {
+        display.textContent = '0:00';
+        display.classList.add('alerte');
+        msg.textContent = 'STOP !';
+        msg.classList.add('msg-stop');
+        btn.innerHTML = '&#9654;';
+        btn.className = 'timer-btn timer-btn-start';
+        btn.disabled = true;
+    }
+}
+
+function majScoringEnabled() {
+    var zone = document.getElementById('scoring-zone');
+    var m = etat.currentMatch >= 0 ? etat.matchs[etat.currentMatch] : null;
+    var cartonActif = m && (m.cartonRouge1 || m.cartonRouge2);
+    var timerActif = timer.etat === 'COMBAT' || timer.etat === 'PAUSE' || timer.etat === 'TERMINE';
+    zone.classList.toggle('scoring-disabled', !timerActif);
+    zone.classList.toggle('scoring-carton-rouge', timerActif && cartonActif);
+}
+
+/* ========== SCORING ========== */
+function marquerAction(lutteur, action) {
+    var m = etat.matchs[etat.currentMatch];
+    if (!m) return;
+    var scores = lutteur === 1 ? m.scores1 : m.scores2;
+
+    if (m.cartonRouge1 || m.cartonRouge2) return;
+
+    if (action === 'penalite') {
+        var avertKey = lutteur === 1 ? 'avert1' : 'avert2';
+        m[avertKey]++;
+        if (m[avertKey] >= 2) {
+            var crKey = lutteur === 1 ? 'cartonRouge1' : 'cartonRouge2';
+            m[crKey] = true;
+            var nomDQ = lutteur === 1 ? m.lutteur1 : m.lutteur2;
+            if (etat.disqualifies.indexOf(nomDQ) === -1) etat.disqualifies.push(nomDQ);
+            appliquerForfaits(nomDQ);
+        }
+    }
+
+    scores[action]++;
+    m.historique.push({
+        lutteur: lutteur,
+        action: action,
+        temps: formatTemps(timer.secondes)
+    });
+
+    beep(action === 'tomber' ? 1200 : 700, action === 'tomber' ? 300 : 100);
+    majScoresUI();
+    majHistoriqueUI();
+    sauvegarder();
+
+    if (m.cartonRouge1 || m.cartonRouge2) {
+        if (timer.etat === 'COMBAT' || timer.etat === 'SALUT') {
+            clearInterval(timer.intervalId);
+            timer.intervalId = null;
+            timer.etat = 'PAUSE';
+            majTimerUI();
+        }
+        majScoringEnabled();
+    }
+
+    var ptsEl = document.getElementById('pts-l' + lutteur);
+    ptsEl.classList.remove('score-flash');
+    void ptsEl.offsetWidth;
+    ptsEl.classList.add('score-flash');
+}
+
+function annulerAction(lutteur) {
+    var m = etat.matchs[etat.currentMatch];
+    if (!m) return;
+    for (var i = m.historique.length - 1; i >= 0; i--) {
+        if (m.historique[i].lutteur === lutteur) {
+            var act = m.historique[i].action;
+            var scores = lutteur === 1 ? m.scores1 : m.scores2;
+            if (scores[act] > 0) scores[act]--;
+            if (act === 'penalite') {
+                var ak = lutteur === 1 ? 'avert1' : 'avert2';
+                if (m[ak] > 0) m[ak]--;
+                var crk = lutteur === 1 ? 'cartonRouge1' : 'cartonRouge2';
+                if (m[ak] < 2 && m[crk]) {
+                    m[crk] = false;
+                    var nomDQ = lutteur === 1 ? m.lutteur1 : m.lutteur2;
+                    var idx = etat.disqualifies.indexOf(nomDQ);
+                    if (idx !== -1) etat.disqualifies.splice(idx, 1);
+                    annulerForfaits(nomDQ);
+                }
+            }
+            m.historique.splice(i, 1);
+            break;
+        }
+    }
+    majScoresUI();
+    majHistoriqueUI();
+    majScoringEnabled();
+    sauvegarder();
+}
+
+function majScoresUI() {
+    var m = etat.matchs[etat.currentMatch];
+    if (!m) return;
+    document.getElementById('pts-l1').textContent = calculerTotal(m.scores1);
+    document.getElementById('pts-l2').textContent = calculerTotal(m.scores2);
+
+    var a1 = document.getElementById('avert-l1');
+    a1.textContent = m.avert1 + ' avert.';
+    a1.className = 'scoring-avert' + (m.cartonRouge1 ? ' carton-rouge' : '');
+    if (m.cartonRouge1) a1.textContent = 'CARTON ROUGE';
+
+    var a2 = document.getElementById('avert-l2');
+    a2.textContent = m.avert2 + ' avert.';
+    a2.className = 'scoring-avert' + (m.cartonRouge2 ? ' carton-rouge' : '');
+    if (m.cartonRouge2) a2.textContent = 'CARTON ROUGE';
+}
+
+function majHistoriqueUI() {
+    var m = etat.matchs[etat.currentMatch];
+    if (!m) return;
+    var zone = document.getElementById('zone-historique');
+    if (m.historique.length === 0) {
+        zone.innerHTML = '<div style="color:#9E9E9E;font-size:0.85em">Aucune action</div>';
+        return;
+    }
+    var html = '';
+    for (var i = m.historique.length - 1; i >= 0; i--) {
+        var h = m.historique[i];
+        var couleur = h.lutteur === 1 ? 'var(--couleur-bleu)' : 'var(--couleur-rouge)';
+        var nom = h.lutteur === 1 ? m.lutteur1 : m.lutteur2;
+        html += '<div class="historique-ligne">';
+        html += '<span class="historique-temps">' + escH(h.temps) + '</span>';
+        html += '<span style="color:' + couleur + ';font-weight:600">' + escH(nom) + '</span>';
+        html += '<span>' + escH(ACTIONS[h.action].label) + ' (' + (ACTIONS[h.action].pts > 0 ? '+' : '') + ACTIONS[h.action].pts + ')</span>';
+        html += '</div>';
+    }
+    zone.innerHTML = html;
+}
+
+function appliquerForfaits(nomDQ) {
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var m = etat.matchs[i];
+        if (m.termine) continue;
+        if (m.lutteur1 === nomDQ || m.lutteur2 === nomDQ) {
+            if (i === etat.currentMatch) continue;
+            m.termine = true;
+            m.forfait = true;
+            m.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+            m.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+            m.vainqueur = m.lutteur1 === nomDQ ? m.lutteur2 : m.lutteur1;
+        }
+    }
+}
+
+function annulerForfaits(nom) {
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var m = etat.matchs[i];
+        if (!m.forfait) continue;
+        if (m.lutteur1 === nom || m.lutteur2 === nom) {
+            m.termine = false;
+            m.forfait = false;
+            m.vainqueur = null;
+        }
+    }
+}
+
+/* ========== VALIDATION ========== */
+function validerCombat() {
+    var m = etat.matchs[etat.currentMatch];
+    if (!m) return;
+    var s1 = calculerTotal(m.scores1);
+    var s2 = calculerTotal(m.scores2);
+    var vainqueur = '';
+    if (m.cartonRouge1) vainqueur = m.lutteur2;
+    else if (m.cartonRouge2) vainqueur = m.lutteur1;
+    else if (s1 > s2) vainqueur = m.lutteur1;
+    else if (s2 > s1) vainqueur = m.lutteur2;
+    else vainqueur = '';
+
+    var html = '<div style="text-align:center;margin-bottom:16px">';
+    html += '<div style="font-size:1.1em;font-weight:700;margin-bottom:12px">' +
+            escH(m.lutteur1) + ' vs ' + escH(m.lutteur2) + '</div>';
+    html += '<div style="display:flex;justify-content:center;gap:20px;font-size:1.5em;font-weight:700">';
+    html += '<span style="color:var(--couleur-bleu)">' + s1 + '</span>';
+    html += '<span style="color:#757575">—</span>';
+    html += '<span style="color:var(--couleur-rouge)">' + s2 + '</span>';
+    html += '</div>';
+    if (vainqueur) {
+        html += '<div style="margin-top:10px;font-weight:700;color:var(--couleur-succes)">Vainqueur : ' + escH(vainqueur) + '</div>';
+    } else {
+        html += '<div style="margin-top:10px;font-weight:700;color:var(--couleur-accent)">Match nul</div>';
+    }
+    if (m.cartonRouge1) html += '<div style="color:var(--couleur-danger);font-weight:700">Carton rouge : ' + escH(m.lutteur1) + '</div>';
+    if (m.cartonRouge2) html += '<div style="color:var(--couleur-danger);font-weight:700">Carton rouge : ' + escH(m.lutteur2) + '</div>';
+    html += '</div>';
+
+    document.getElementById('validation-body').innerHTML = html;
+    document.getElementById('modale-validation').classList.remove('cache');
+}
+
+function confirmerValidation() {
+    var m = etat.matchs[etat.currentMatch];
+    if (m.cartonRouge1) {
+        m.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        m.vainqueur = m.lutteur2;
+    } else if (m.cartonRouge2) {
+        m.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        m.vainqueur = m.lutteur1;
+    } else {
+        var s1 = calculerTotal(m.scores1);
+        var s2 = calculerTotal(m.scores2);
+        if (s1 > s2) m.vainqueur = m.lutteur1;
+        else if (s2 > s1) m.vainqueur = m.lutteur2;
+        else m.vainqueur = null;
+    }
+    m.termine = true;
+
+    clearInterval(timer.intervalId);
+    timer.intervalId = null;
+
+    fermerModale('modale-validation');
+    document.getElementById('ecran-combat').classList.add('cache');
+    document.getElementById('ecran-config').classList.remove('cache');
+    document.getElementById('btn-timer-start').disabled = false;
+    etat.currentMatch = -1;
+    afficherListeMatchs();
+    sauvegarder();
+}
+
+function retourSansValider() {
+    ouvrirConfirmation('Quitter le combat',
+        'Revenir à la liste sans valider ? Les scores de ce combat seront conservés.',
+        function() {
+            clearInterval(timer.intervalId);
+            timer.intervalId = null;
+            document.getElementById('ecran-combat').classList.add('cache');
+            document.getElementById('ecran-config').classList.remove('cache');
+            document.getElementById('btn-timer-start').disabled = false;
+            etat.currentMatch = -1;
+            afficherListeMatchs();
+            sauvegarder();
+        });
+}
+
+/* ========== CLASSEMENT ========== */
+function verifierClassement() {
+    var secClass = document.getElementById('section-classement');
+    var zoneQR = document.getElementById('zone-qr-btn');
+    var zoneRelancer = document.getElementById('zone-relancer');
+    var tousTermines = etat.matchs.length > 0;
+    for (var i = 0; i < etat.matchs.length; i++) {
+        if (!etat.matchs[i].termine) { tousTermines = false; break; }
+    }
+
+    if (!tousTermines && etat.matchs.length > 0) {
+        var parGroupe = {};
+        for (var g = 0; g < etat.groupes.length; g++) parGroupe[etat.groupes[g].id] = { total: 0, termine: 0 };
+        for (var i = 0; i < etat.matchs.length; i++) {
+            var gid = etat.matchs[i].groupeId;
+            if (parGroupe[gid]) {
+                parGroupe[gid].total++;
+                if (etat.matchs[i].termine) parGroupe[gid].termine++;
+            }
+        }
+        var auMoinsUnGroupeComplet = false;
+        for (var k in parGroupe) {
+            if (parGroupe[k].total > 0 && parGroupe[k].termine === parGroupe[k].total) auMoinsUnGroupeComplet = true;
+        }
+        if (auMoinsUnGroupeComplet) {
+            secClass.classList.remove('cache');
+            afficherClassement(parGroupe);
+            zoneQR.classList.add('cache');
+            zoneRelancer.classList.add('cache');
+            return;
+        }
+    }
+
+    if (tousTermines && etat.matchs.length > 0) {
+        secClass.classList.remove('cache');
+        afficherClassement(null);
+        zoneQR.classList.remove('cache');
+        zoneRelancer.classList.toggle('cache', !peutRelancer());
+    } else {
+        secClass.classList.add('cache');
+        zoneQR.classList.add('cache');
+        zoneRelancer.classList.add('cache');
+    }
+}
+
+function afficherClassement(parGroupe) {
+    var zone = document.getElementById('zone-classement');
+    var html = '';
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        if (parGroupe && parGroupe[gr.id] && parGroupe[gr.id].termine < parGroupe[gr.id].total) continue;
+
+        var stats = {};
+        for (var e = 0; e < gr.eleves.length; e++) {
+            stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+        }
+
+        for (var i = 0; i < etat.matchs.length; i++) {
+            var m = etat.matchs[i];
+            if (m.groupeId !== gr.id || !m.termine) continue;
+            var s1 = calculerTotal(m.scores1);
+            var s2 = calculerTotal(m.scores2);
+            if (etat.disqualifies.indexOf(m.lutteur1) !== -1) s1 = 0;
+            if (etat.disqualifies.indexOf(m.lutteur2) !== -1) s2 = 0;
+            if (stats[m.lutteur1]) stats[m.lutteur1].ptsTotaux += s1;
+            if (stats[m.lutteur2]) stats[m.lutteur2].ptsTotaux += s2;
+            if (m.vainqueur === m.lutteur1) {
+                if (stats[m.lutteur1]) { stats[m.lutteur1].victoires++; stats[m.lutteur1].ptsClass += 3; }
+                if (stats[m.lutteur2]) { stats[m.lutteur2].defaites++; }
+            } else if (m.vainqueur === m.lutteur2) {
+                if (stats[m.lutteur2]) { stats[m.lutteur2].victoires++; stats[m.lutteur2].ptsClass += 3; }
+                if (stats[m.lutteur1]) { stats[m.lutteur1].defaites++; }
+            } else {
+                if (stats[m.lutteur1]) { stats[m.lutteur1].nuls++; stats[m.lutteur1].ptsClass += 1; }
+                if (stats[m.lutteur2]) { stats[m.lutteur2].nuls++; stats[m.lutteur2].ptsClass += 1; }
+            }
+        }
+
+        var classement = [];
+        for (var nom in stats) classement.push({ nom: nom, s: stats[nom] });
+
+        if (etat.modeClassement === 'victoires') {
+            classement.sort(function(a, b) {
+                if (b.s.ptsClass !== a.s.ptsClass) return b.s.ptsClass - a.s.ptsClass;
+                return b.s.ptsTotaux - a.s.ptsTotaux;
+            });
+        } else {
+            classement.sort(function(a, b) {
+                if (b.s.ptsTotaux !== a.s.ptsTotaux) return b.s.ptsTotaux - a.s.ptsTotaux;
+                return b.s.victoires - a.s.victoires;
+            });
+        }
+
+        html += '<h3 style="margin:16px 0 8px;color:var(--couleur-accent)">Groupe ' + escH(gr.id) + '</h3>';
+        html += '<div style="overflow-x:auto"><table class="classement-table">';
+        html += '<tr><th>#</th><th>Élève</th><th>V</th><th>N</th><th>D</th>';
+        if (etat.modeClassement === 'victoires') html += '<th>Pts class.</th>';
+        html += '<th>Pts totaux</th></tr>';
+        for (var c = 0; c < classement.length; c++) {
+            var r = classement[c];
+            var cls = c === 0 ? 'rang-1' : c === 1 ? 'rang-2' : c === 2 ? 'rang-3' : '';
+            html += '<tr class="' + cls + '">';
+            html += '<td>' + (c + 1) + '</td>';
+            html += '<td style="text-align:left;font-weight:600">' + escH(r.nom) + '</td>';
+            html += '<td>' + r.s.victoires + '</td>';
+            html += '<td>' + r.s.nuls + '</td>';
+            html += '<td>' + r.s.defaites + '</td>';
+            if (etat.modeClassement === 'victoires') html += '<td style="font-weight:700">' + r.s.ptsClass + '</td>';
+            html += '<td>' + r.s.ptsTotaux + '</td>';
+            html += '</tr>';
+        }
+        html += '</table></div>';
+    }
+    zone.innerHTML = html;
+}
+
+/* ========== PERSISTANCE ========== */
+function sauvegarder() {
+    lireConfig();
+    try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat)); } catch(e) {}
+}
+
+function charger() {
+    try {
+        var data = localStorage.getItem(CLE_STOCKAGE);
+        if (data) {
+            var parsed = JSON.parse(data);
+            for (var k in parsed) {
+                if (etat.hasOwnProperty(k)) etat[k] = parsed[k];
+            }
+        }
+    } catch(e) {}
+}
+
+function exporterJSON() {
+    lireConfig();
+    var data = {
+        app: 'CompteurLutte',
+        version: '0.1',
+        exportDate: new Date().toISOString(),
+        seance: etat
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_Enc' + etat.enceinte + '_' + etat.date + '.json';
+
+    if (typeof AndroidDownload !== 'undefined') {
+        AndroidDownload.download(nomFichier, 'application/json', JSON.stringify(data, null, 2));
+        return;
+    }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nomFichier;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+}
+
+function importerJSON(evt) {
+    var fichier = evt.target.files[0];
+    if (!fichier) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var data = JSON.parse(e.target.result);
+            if (data.app !== 'CompteurLutte') {
+                afficherMessage('Ce fichier n\'est pas un export Compteur Lutte.');
+                return;
+            }
+            etat = data.seance;
+            ecrireConfig();
+            afficherGroupes();
+            afficherListeMatchs();
+            sauvegarder();
+        } catch(err) {
+            afficherMessage('Erreur de lecture du fichier JSON.');
+        }
+    };
+    reader.readAsText(fichier);
+    evt.target.value = '';
+}
+
+/* ========== QR CODE ========== */
+function exporterQR() {
+    var tousTermines = true;
+    for (var i = 0; i < etat.matchs.length; i++) {
+        if (!etat.matchs[i].termine) { tousTermines = false; break; }
+    }
+    if (!tousTermines) {
+        afficherMessage('Tous les combats doivent être terminés pour exporter le QR code.');
+        return;
+    }
+
+    var payload = { a: 'CL', c: etat.classe, d: etat.date, e: etat.enceinte, m: etat.modeClassement, g: [] };
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        var stats = {};
+        for (var e = 0; e < gr.eleves.length; e++) {
+            stats[gr.eleves[e]] = { v: 0, n: 0, d: 0, p: 0, pc: 0 };
+        }
+        for (var i = 0; i < etat.matchs.length; i++) {
+            var m = etat.matchs[i];
+            if (m.groupeId !== gr.id || !m.termine) continue;
+            var s1 = calculerTotal(m.scores1), s2 = calculerTotal(m.scores2);
+            if (etat.disqualifies.indexOf(m.lutteur1) !== -1) s1 = 0;
+            if (etat.disqualifies.indexOf(m.lutteur2) !== -1) s2 = 0;
+            if (stats[m.lutteur1]) stats[m.lutteur1].p += s1;
+            if (stats[m.lutteur2]) stats[m.lutteur2].p += s2;
+            if (m.vainqueur === m.lutteur1) {
+                if (stats[m.lutteur1]) { stats[m.lutteur1].v++; stats[m.lutteur1].pc += 3; }
+                if (stats[m.lutteur2]) stats[m.lutteur2].d++;
+            } else if (m.vainqueur === m.lutteur2) {
+                if (stats[m.lutteur2]) { stats[m.lutteur2].v++; stats[m.lutteur2].pc += 3; }
+                if (stats[m.lutteur1]) stats[m.lutteur1].d++;
+            } else {
+                if (stats[m.lutteur1]) { stats[m.lutteur1].n++; stats[m.lutteur1].pc += 1; }
+                if (stats[m.lutteur2]) { stats[m.lutteur2].n++; stats[m.lutteur2].pc += 1; }
+            }
+        }
+        var arr = [];
+        for (var nom in stats) arr.push({ n: nom, v: stats[nom].v, d: stats[nom].d, p: stats[nom].p, pc: stats[nom].pc });
+        payload.g.push({ id: gr.id, r: arr });
+    }
+
+    var jsonStr = JSON.stringify(payload);
+    var zone = document.getElementById('zone-qr');
+    zone.innerHTML = '';
+
+    try {
+        var canvas = document.createElement('canvas');
+        genererQRCanvas(canvas, jsonStr);
+        zone.appendChild(canvas);
+        zone.innerHTML += '<p style="margin-top:10px;font-size:0.85em;color:var(--couleur-texte-clair)">' +
+            escH(etat.classe) + ' — Enceinte ' + etat.enceinte + ' — ' + etat.date + '</p>';
+    } catch(e) {
+        zone.innerHTML = '<p style="color:var(--couleur-danger)">Données trop volumineuses pour un QR code.<br>Utilisez l\'export JSON.</p>';
+    }
+
+    document.getElementById('modale-qr').classList.remove('cache');
+}
+
+function genererQRCanvas(canvas, text) {
+    var qr = qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.LOW);
+    var size = qr.size;
+    var scale = Math.max(4, Math.floor(250 / size));
+    var border = 4;
+    canvas.width = (size + border * 2) * scale;
+    canvas.height = canvas.width;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000000';
+    for (var y = 0; y < size; y++) {
+        for (var x = 0; x < size; x++) {
+            if (qr.getModule(x, y)) {
+                ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+            }
+        }
+    }
+}
+
+/* ========== QR CODE GENERATOR (qrcodegen) ========== */
+var qrcodegen = (function() {
+    "use strict";
+    function QrCode(ver, ecl, dataCodewords, msk) {
+        if (ver < 1 || ver > 40) throw new RangeError("Version out of range");
+        this.version = ver;
+        this.errorCorrectionLevel = ecl;
+        this.size = ver * 4 + 17;
+        this.modules = [];
+        this.isFunction = [];
+        for (var i = 0; i < this.size; i++) {
+            this.modules.push([]);
+            this.isFunction.push([]);
+            for (var j = 0; j < this.size; j++) {
+                this.modules[i].push(false);
+                this.isFunction[i].push(false);
+            }
+        }
+        this.drawFunctionPatterns();
+        var allCodewords = this.addEccAndInterleave(dataCodewords);
+        this.drawCodewords(allCodewords);
+        if (msk === -1) {
+            var minPenalty = Infinity;
+            for (var i = 0; i < 8; i++) {
+                this.applyMask(i);
+                this.drawFormatBits(i);
+                var penalty = this.getPenaltyScore();
+                if (penalty < minPenalty) { msk = i; minPenalty = penalty; }
+                this.applyMask(i);
+            }
+        }
+        this.mask = msk;
+        this.applyMask(msk);
+        this.drawFormatBits(msk);
+        this.isFunction = [];
+    }
+
+    QrCode.encodeText = function(text, ecl) {
+        var segs = [QrSegment.makeBytes(toUtf8ByteArray(text))];
+        return QrCode.encodeSegments(segs, ecl);
+    };
+
+    QrCode.encodeSegments = function(segs, ecl, minVersion, maxVersion, mask, boostEcl) {
+        if (minVersion === undefined) minVersion = 1;
+        if (maxVersion === undefined) maxVersion = 40;
+        if (mask === undefined) mask = -1;
+        if (boostEcl === undefined) boostEcl = true;
+        var version, dataUsedBits;
+        for (version = minVersion; ; version++) {
+            var dataCapacityBits = getNumDataCodewords(version, ecl) * 8;
+            dataUsedBits = QrSegment.getTotalBits(segs, version);
+            if (dataUsedBits !== -1 && dataUsedBits <= dataCapacityBits) break;
+            if (version >= maxVersion) throw new RangeError("Data too long");
+        }
+        [QrCode.Ecc.MEDIUM, QrCode.Ecc.QUARTILE, QrCode.Ecc.HIGH].forEach(function(newEcl) {
+            if (boostEcl && dataUsedBits <= getNumDataCodewords(version, newEcl) * 8) ecl = newEcl;
+        });
+        var bb = [];
+        segs.forEach(function(seg) {
+            appendBits(seg.mode.modeBits, 4, bb);
+            appendBits(seg.numChars, seg.mode.numCharCountBits(version), bb);
+            seg.data.forEach(function(b) { bb.push(b); });
+        });
+        var dataCapacityBits = getNumDataCodewords(version, ecl) * 8;
+        appendBits(0, Math.min(4, dataCapacityBits - bb.length), bb);
+        appendBits(0, (8 - bb.length % 8) % 8, bb);
+        for (var padByte = 0xEC; bb.length < dataCapacityBits; padByte ^= 0xEC ^ 0x11)
+            appendBits(padByte, 8, bb);
+        var dataCodewords = [];
+        for (var i = 0; i < bb.length; i += 8)
+            dataCodewords.push(bb[i] << 7 | bb[i+1] << 6 | bb[i+2] << 5 | bb[i+3] << 4 | bb[i+4] << 3 | bb[i+5] << 2 | bb[i+6] << 1 | bb[i+7]);
+        return new QrCode(version, ecl, dataCodewords, mask);
+    };
+
+    var p = QrCode.prototype;
+
+    p.getModule = function(x, y) {
+        return 0 <= x && x < this.size && 0 <= y && y < this.size && this.modules[y][x];
+    };
+
+    p.drawFunctionPatterns = function() {
+        for (var i = 0; i < this.size; i++) {
+            this.setFunctionModule(6, i, i % 2 === 0);
+            this.setFunctionModule(i, 6, i % 2 === 0);
+        }
+        this.drawFinderPattern(3, 3);
+        this.drawFinderPattern(this.size - 4, 3);
+        this.drawFinderPattern(3, this.size - 4);
+        var alignPatPos = this.getAlignmentPatternPositions();
+        for (var i = 0; i < alignPatPos.length; i++) {
+            for (var j = 0; j < alignPatPos.length; j++) {
+                if (!(i === 0 && j === 0) && !(i === 0 && j === alignPatPos.length - 1) && !(i === alignPatPos.length - 1 && j === 0))
+                    this.drawAlignmentPattern(alignPatPos[i], alignPatPos[j]);
+            }
+        }
+        this.drawFormatBits(0);
+        this.drawVersion();
+    };
+
+    p.drawFormatBits = function(mask) {
+        var data = this.errorCorrectionLevel.formatBits << 3 | mask;
+        var rem = data;
+        for (var i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+        var bits = (data << 10 | rem) ^ 0x5412;
+        for (var i = 0; i <= 5; i++) this.setFunctionModule(8, i, getBit(bits, i));
+        this.setFunctionModule(8, 7, getBit(bits, 6));
+        this.setFunctionModule(8, 8, getBit(bits, 7));
+        this.setFunctionModule(7, 8, getBit(bits, 8));
+        for (var i = 9; i < 15; i++) this.setFunctionModule(14 - i, 8, getBit(bits, i));
+        for (var i = 0; i < 8; i++) this.setFunctionModule(this.size - 1 - i, 8, getBit(bits, i));
+        for (var i = 8; i < 15; i++) this.setFunctionModule(8, this.size - 15 + i, getBit(bits, i));
+        this.setFunctionModule(8, this.size - 8, true);
+    };
+
+    p.drawVersion = function() {
+        if (this.version < 7) return;
+        var rem = this.version;
+        for (var i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+        var bits = this.version << 12 | rem;
+        for (var i = 0; i < 18; i++) {
+            var color = getBit(bits, i);
+            var a = this.size - 11 + i % 3, b = Math.floor(i / 3);
+            this.setFunctionModule(a, b, color);
+            this.setFunctionModule(b, a, color);
+        }
+    };
+
+    p.drawFinderPattern = function(x, y) {
+        for (var dy = -4; dy <= 4; dy++) {
+            for (var dx = -4; dx <= 4; dx++) {
+                var dist = Math.max(Math.abs(dx), Math.abs(dy));
+                var xx = x + dx, yy = y + dy;
+                if (0 <= xx && xx < this.size && 0 <= yy && yy < this.size)
+                    this.setFunctionModule(xx, yy, dist !== 2 && dist !== 4);
+            }
+        }
+    };
+
+    p.drawAlignmentPattern = function(x, y) {
+        for (var dy = -2; dy <= 2; dy++)
+            for (var dx = -2; dx <= 2; dx++)
+                this.setFunctionModule(x + dx, y + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    };
+
+    p.setFunctionModule = function(x, y, isDark) {
+        this.modules[y][x] = isDark;
+        this.isFunction[y][x] = true;
+    };
+
+    p.addEccAndInterleave = function(data) {
+        var ver = this.version, ecl = this.errorCorrectionLevel;
+        var numBlocks = NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
+        var blockEccLen = ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver];
+        var rawCodewords = Math.floor(getNumRawDataModules(ver) / 8);
+        var numShortBlocks = numBlocks - rawCodewords % numBlocks;
+        var shortBlockLen = Math.floor(rawCodewords / numBlocks);
+        var blocks = [];
+        var rs = new ReedSolomonGenerator(blockEccLen);
+        var k = 0;
+        for (var i = 0; i < numBlocks; i++) {
+            var dat = data.slice(k, k + shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1));
+            k += dat.length;
+            var ecc = rs.getRemainder(dat);
+            if (i < numShortBlocks) dat.push(0);
+            blocks.push(dat.concat(ecc));
+        }
+        var result = [];
+        var _loop = function(i) {
+            blocks.forEach(function(block) {
+                if (i !== shortBlockLen - blockEccLen || block.length > shortBlockLen + blockEccLen)
+                    result.push(block[i]);
+            });
+        };
+        for (var i = 0; i < blocks[0].length; i++) _loop(i);
+        return result;
+    };
+
+    p.drawCodewords = function(data) {
+        var i = 0;
+        for (var right = this.size - 1; right >= 1; right -= 2) {
+            if (right === 6) right = 5;
+            for (var vert = 0; vert < this.size; vert++) {
+                for (var j = 0; j < 2; j++) {
+                    var x = right - j;
+                    var upward = ((right + 1) & 2) === 0;
+                    var y = upward ? this.size - 1 - vert : vert;
+                    if (!this.isFunction[y][x] && i < data.length * 8) {
+                        this.modules[y][x] = getBit(data[i >>> 3], 7 - (i & 7));
+                        i++;
+                    }
+                }
+            }
+        }
+    };
+
+    p.applyMask = function(mask) {
+        for (var y = 0; y < this.size; y++) {
+            for (var x = 0; x < this.size; x++) {
+                if (this.isFunction[y][x]) continue;
+                var invert;
+                switch (mask) {
+                    case 0: invert = (x + y) % 2 === 0; break;
+                    case 1: invert = y % 2 === 0; break;
+                    case 2: invert = x % 3 === 0; break;
+                    case 3: invert = (x + y) % 3 === 0; break;
+                    case 4: invert = (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0; break;
+                    case 5: invert = x * y % 2 + x * y % 3 === 0; break;
+                    case 6: invert = (x * y % 2 + x * y % 3) % 2 === 0; break;
+                    case 7: invert = ((x + y) % 2 + x * y % 3) % 2 === 0; break;
+                }
+                if (invert) this.modules[y][x] = !this.modules[y][x];
+            }
+        }
+    };
+
+    p.getPenaltyScore = function() {
+        var result = 0, size = this.size;
+        for (var y = 0; y < size; y++) {
+            var runColor = false, runLen = 0, runHistory = [0,0,0,0,0,0,0];
+            for (var x = 0; x < size; x++) {
+                if (this.modules[y][x] === runColor) {
+                    runLen++;
+                    if (runLen === 5) result += 3;
+                    else if (runLen > 5) result++;
+                } else {
+                    this.finderPenaltyAddHistory(runLen, runHistory);
+                    if (!runColor) result += this.finderPenaltyCountPatterns(runHistory) * 40;
+                    runColor = this.modules[y][x];
+                    runLen = 1;
+                }
+            }
+            result += this.finderPenaltyTerminateAndCount(runColor, runLen, runHistory) * 40;
+        }
+        for (var x = 0; x < size; x++) {
+            var runColor = false, runLen = 0, runHistory = [0,0,0,0,0,0,0];
+            for (var y = 0; y < size; y++) {
+                if (this.modules[y][x] === runColor) {
+                    runLen++;
+                    if (runLen === 5) result += 3;
+                    else if (runLen > 5) result++;
+                } else {
+                    this.finderPenaltyAddHistory(runLen, runHistory);
+                    if (!runColor) result += this.finderPenaltyCountPatterns(runHistory) * 40;
+                    runColor = this.modules[y][x];
+                    runLen = 1;
+                }
+            }
+            result += this.finderPenaltyTerminateAndCount(runColor, runLen, runHistory) * 40;
+        }
+        for (var y = 0; y < size - 1; y++)
+            for (var x = 0; x < size - 1; x++) {
+                var c = this.modules[y][x];
+                if (c === this.modules[y][x+1] && c === this.modules[y+1][x] && c === this.modules[y+1][x+1]) result += 3;
+            }
+        var dark = 0;
+        for (var y = 0; y < size; y++) for (var x = 0; x < size; x++) if (this.modules[y][x]) dark++;
+        var total = size * size;
+        var k = Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1;
+        result += k * 10;
+        return result;
+    };
+
+    p.getAlignmentPatternPositions = function() {
+        if (this.version === 1) return [];
+        var numAlign = Math.floor(this.version / 7) + 2;
+        var step = this.version === 32 ? 26 :
+            Math.ceil((this.version * 4 + 4) / (numAlign * 2 - 2)) * 2;
+        var result = [6];
+        for (var pos = this.size - 7; result.length < numAlign; pos -= step) result.splice(1, 0, pos);
+        return result;
+    };
+
+    p.finderPenaltyCountPatterns = function(runHistory) {
+        var n = runHistory[1];
+        var core = n > 0 && runHistory[2] === n && runHistory[3] === 3 * n && runHistory[4] === n && runHistory[5] === n;
+        return (core && runHistory[0] >= 4 * n && runHistory[6] >= n ? 1 : 0) +
+               (core && runHistory[6] >= 4 * n && runHistory[0] >= n ? 1 : 0);
+    };
+
+    p.finderPenaltyTerminateAndCount = function(currentRunColor, currentRunLength, runHistory) {
+        if (currentRunColor) {
+            this.finderPenaltyAddHistory(currentRunLength, runHistory);
+            currentRunLength = 0;
+        }
+        currentRunLength += this.size;
+        this.finderPenaltyAddHistory(currentRunLength, runHistory);
+        return this.finderPenaltyCountPatterns(runHistory);
+    };
+
+    p.finderPenaltyAddHistory = function(currentRunLength, runHistory) {
+        if (runHistory[0] === 0) currentRunLength += this.size;
+        runHistory.pop();
+        runHistory.unshift(currentRunLength);
+    };
+
+    QrCode.Ecc = {
+        LOW:      { ordinal: 0, formatBits: 1 },
+        MEDIUM:   { ordinal: 1, formatBits: 0 },
+        QUARTILE: { ordinal: 2, formatBits: 3 },
+        HIGH:     { ordinal: 3, formatBits: 2 }
+    };
+
+    function QrSegment(mode, numChars, data) {
+        this.mode = mode; this.numChars = numChars; this.data = data.slice();
+    }
+    QrSegment.makeBytes = function(data) {
+        var bb = [];
+        data.forEach(function(b) { appendBits(b, 8, bb); });
+        return new QrSegment(QrSegment.Mode.BYTE, data.length, bb);
+    };
+    QrSegment.getTotalBits = function(segs, version) {
+        var result = 0;
+        for (var i = 0; i < segs.length; i++) {
+            var ccbits = segs[i].mode.numCharCountBits(version);
+            if (segs[i].numChars >= (1 << ccbits)) return -1;
+            result += 4 + ccbits + segs[i].data.length;
+        }
+        return result;
+    };
+    QrSegment.Mode = {
+        NUMERIC:      { modeBits: 0x1, numCharCountBits: function(v) { return v < 10 ? 10 : v < 27 ? 12 : 14; } },
+        ALPHANUMERIC: { modeBits: 0x2, numCharCountBits: function(v) { return v < 10 ? 9 : v < 27 ? 11 : 13; } },
+        BYTE:         { modeBits: 0x4, numCharCountBits: function(v) { return v < 10 ? 8 : 16; } },
+        KANJI:        { modeBits: 0x8, numCharCountBits: function(v) { return v < 10 ? 8 : v < 27 ? 10 : 12; } },
+        ECI:          { modeBits: 0x7, numCharCountBits: function()  { return 0; } }
+    };
+
+    function ReedSolomonGenerator(degree) {
+        this.coefficients = [];
+        for (var i = 0; i < degree - 1; i++) this.coefficients.push(0);
+        this.coefficients.push(1);
+        var root = 1;
+        for (var i = 0; i < degree; i++) {
+            for (var j = 0; j < this.coefficients.length; j++) {
+                this.coefficients[j] = reedSolomonMultiply(this.coefficients[j], root);
+                if (j + 1 < this.coefficients.length)
+                    this.coefficients[j] ^= this.coefficients[j + 1];
+            }
+            root = reedSolomonMultiply(root, 0x02);
+        }
+    }
+    ReedSolomonGenerator.prototype.getRemainder = function(data) {
+        var result = this.coefficients.map(function() { return 0; });
+        var _this = this;
+        data.forEach(function(b) {
+            var factor = b ^ result.shift();
+            result.push(0);
+            _this.coefficients.forEach(function(coef, i) {
+                result[i] ^= reedSolomonMultiply(coef, factor);
+            });
+        });
+        return result;
+    };
+
+    function reedSolomonMultiply(x, y) {
+        var z = 0;
+        for (var i = 7; i >= 0; i--) {
+            z = (z << 1) ^ ((z >>> 7) * 0x11D);
+            z ^= ((y >>> i) & 1) * x;
+        }
+        return z;
+    }
+
+    function getNumRawDataModules(ver) {
+        var result = (16 * ver + 128) * ver + 64;
+        if (ver >= 2) {
+            var numAlign = Math.floor(ver / 7) + 2;
+            result -= (25 * numAlign - 10) * numAlign - 55;
+            if (ver >= 7) result -= 36;
+        }
+        return result;
+    }
+
+    function getNumDataCodewords(ver, ecl) {
+        return Math.floor(getNumRawDataModules(ver) / 8) -
+            ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver] * NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
+    }
+
+    function appendBits(val, len, bb) {
+        for (var i = len - 1; i >= 0; i--) bb.push((val >>> i) & 1);
+    }
+
+    function getBit(x, i) { return ((x >>> i) & 1) !== 0; }
+
+    function toUtf8ByteArray(str) {
+        str = encodeURI(str);
+        var result = [];
+        for (var i = 0; i < str.length; i++) {
+            if (str.charAt(i) !== '%') result.push(str.charCodeAt(i));
+            else { result.push(parseInt(str.substr(i + 1, 2), 16)); i += 2; }
+        }
+        return result;
+    }
+
+    var ECC_CODEWORDS_PER_BLOCK = [
+        [-1,7,10,15,20,26,18,20,24,30,18,20,24,26,30,22,24,28,30,28,28,28,28,30,30,26,28,30,30,30,30,30,30,30,30,30,30,30,30,30,30],
+        [-1,10,16,26,18,24,16,18,22,22,26,30,22,22,24,24,28,28,26,26,26,26,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28],
+        [-1,13,22,18,26,18,24,18,22,20,24,28,26,24,20,30,24,28,28,26,30,28,30,30,30,30,28,30,30,30,30,30,30,30,30,30,30,30,30,30,30],
+        [-1,17,28,22,16,22,28,26,26,24,28,24,28,22,24,24,30,28,28,26,28,30,24,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30]
+    ];
+    var NUM_ERROR_CORRECTION_BLOCKS = [
+        [-1,1,1,1,1,1,2,2,2,2,4,4,4,4,4,6,6,6,6,7,8,8,9,9,10,12,12,12,13,14,15,16,17,18,19,19,20,21,22,24,25],
+        [-1,1,1,1,2,2,4,4,4,5,5,5,8,9,9,10,10,11,13,14,16,17,17,18,20,21,23,25,26,28,29,31,33,35,37,38,40,43,45,47,49],
+        [-1,1,1,2,2,4,4,6,6,8,8,8,10,12,16,12,17,16,18,21,20,23,23,25,27,29,34,34,35,38,40,43,45,48,51,53,56,59,62,65,68],
+        [-1,1,1,2,4,4,4,5,6,8,8,11,11,16,16,18,16,19,21,25,25,25,34,30,32,35,37,40,42,45,48,51,54,57,60,63,66,70,74,77,81]
+    ];
+
+    return { QrCode: QrCode, QrSegment: QrSegment };
+})();
+
+/* ========== MODALES ========== */
+function ouvrirConfirmation(titre, message, callback) {
+    document.getElementById('confirm-titre').textContent = titre;
+    document.getElementById('confirm-message').textContent = message;
+    var btn = document.getElementById('confirm-btn');
+    btn.onclick = function() { fermerModale('modale-confirm'); callback(); };
+    document.getElementById('modale-confirm').classList.remove('cache');
+}
+
+function fermerModale(id) { document.getElementById(id).classList.add('cache'); }
+
+function afficherMessage(msg) {
+    document.getElementById('confirm-titre').textContent = 'Information';
+    document.getElementById('confirm-message').textContent = msg;
+    var btn = document.getElementById('confirm-btn');
+    btn.textContent = 'OK';
+    btn.onclick = function() {
+        fermerModale('modale-confirm');
+        btn.textContent = 'Confirmer';
+        document.querySelector('#modale-confirm .bouton-outline').classList.remove('cache');
+    };
+    document.querySelector('#modale-confirm .bouton-outline').classList.add('cache');
+    document.getElementById('modale-confirm').classList.remove('cache');
+}
+
+function confirmerNouvelle() {
+    ouvrirConfirmation('Nouvelle séance',
+        'Effacer toutes les données de la séance en cours ? Cette action est irréversible.',
+        function() {
+            etat = creerEtatVide();
+            ecrireConfig();
+            afficherGroupes();
+            document.getElementById('section-matchs').classList.add('cache');
+            document.getElementById('section-classement').classList.add('cache');
+            document.getElementById('zone-qr-btn').classList.add('cache');
+            document.getElementById('zone-relancer').classList.add('cache');
+            sauvegarder();
+        });
+}
+
+/* ========== WAKE LOCK + FULLSCREEN ========== */
+var wakeLock = null;
+async function requestWakeLock() {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+}
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') requestWakeLock();
+    sauvegarder();
+});
+
+/* ========== SERVICE WORKER ========== */
+if ('serviceWorker' in navigator) {
+    var host = location.hostname || '';
+    if (!host.includes('appassets.androidplatform.net')) {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    }
+}
+
+/* ========== AUTO-SAVE ========== */
+window.addEventListener('beforeunload', sauvegarder);
+setInterval(sauvegarder, 15000);
+
+/* ========== LISTENERS CONFIG ========== */
+document.getElementById('inp-classe').addEventListener('input', function() { lireConfig(); sauvegarder(); });
+document.getElementById('inp-date').addEventListener('change', function() { lireConfig(); sauvegarder(); });
+
+/* ========== INITIALISATION ========== */
+(function init() {
+    charger();
+    ecrireConfig();
+    afficherGroupes();
+    if (etat.matchs.length > 0) afficherListeMatchs();
+    requestWakeLock();
+})();
+</script>
+</body>
+</html>
