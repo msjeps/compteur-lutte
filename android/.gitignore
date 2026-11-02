@@ -1,0 +1,33 @@
+# Build et caches Gradle
+build/
+.gradle/
+.cxx/
+captures/
+
+# Fichiers locaux machine
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Signature : ne jamais committer
+*.jks
+*.keystore
+keystore.properties
+
+# Binaires produits
+*.apk
+*.aab
+*.ap_
+*.dex
+
+.DS_Store
+
+# Generé par la tâche Gradle syncWebApp depuis ../ (PWA)
+app/src/main/assets/index.html
+app/src/main/assets/sw.js
+app/src/main/assets/manifest.json
+app/src/main/assets/icon-192.png
+app/src/main/assets/icon-512.png
+app/src/main/assets/logo-outils-eps.png

@@ -3023,6 +3023,28 @@ document.addEventListener('visibilitychange', function() {
     sauvegarder();
 });
 
+/* ========== PONT ANDROID (APK WebView) ========== */
+window.__androidBack = function() {
+    var modales = ['modale-qr', 'modale-validation', 'modale-confirm', 'modale-reglages'];
+    for (var i = 0; i < modales.length; i++) {
+        var el = document.getElementById(modales[i]);
+        if (el && !el.classList.contains('cache')) { fermerModale(modales[i]); return true; }
+    }
+    if (!document.getElementById('ecran-combat').classList.contains('cache')) {
+        retourSansValider();
+        return true;
+    }
+    if (etat.matchs.length > 0) {
+        ouvrirConfirmation('Quitter', 'Quitter l\'application ? Vos données sont sauvegardées.',
+            function() { if (typeof AndroidDownload !== 'undefined' && AndroidDownload.quitApp) AndroidDownload.quitApp(); });
+        return true;
+    }
+    return false;
+};
+window.__androidNotif = function(texte, classe) {
+    afficherMessage(texte);
+};
+
 /* ========== SERVICE WORKER ========== */
 if ('serviceWorker' in navigator) {
     var host = location.hostname || '';
