@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:">
 <meta name="theme-color" content="#0D47A1">
 <title>Compteur Lutte</title>
 <link rel="manifest" href="manifest.json">
@@ -25,6 +26,24 @@
     --ombre-douce: 0 2px 10px rgba(0,0,0,0.1);
     --ombre-forte: 0 4px 20px rgba(0,0,0,0.15);
     --rayon: 16px;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --couleur-texte: #E0E0E0;
+        --couleur-texte-clair: #9E9E9E;
+        --couleur-fond: #121212;
+        --couleur-blanc: #1E1E1E;
+        --ombre-douce: 0 2px 10px rgba(0,0,0,0.4);
+        --ombre-forte: 0 4px 20px rgba(0,0,0,0.5);
+    }
+}
+:root[data-theme="dark"] {
+    --couleur-texte: #E0E0E0;
+    --couleur-texte-clair: #9E9E9E;
+    --couleur-fond: #121212;
+    --couleur-blanc: #1E1E1E;
+    --ombre-douce: 0 2px 10px rgba(0,0,0,0.4);
+    --ombre-forte: 0 4px 20px rgba(0,0,0,0.5);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -371,7 +390,7 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     .section { padding: 14px 12px; margin: 8px; }
     .timer-affichage { font-size: 2.2em; }
     .scoring-points { font-size: 2em; }
-    .btn-action { font-size: 0.8em; min-height: 40px; padding: 8px 6px; }
+    .btn-action { font-size: 0.8em; min-height: 44px; padding: 8px 6px; }
 }
 @media (min-width: 768px) {
     .form-row { flex-wrap: nowrap; }
@@ -379,6 +398,62 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     .scoring-col { padding: 16px; }
     .scoring-points { font-size: 3.5em; }
 }
+
+/* ===== MODE SOMBRE — SURCHARGES ===== */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) body { background: var(--couleur-fond); }
+    :root:not([data-theme="light"]) input[type="text"],
+    :root:not([data-theme="light"]) input[type="date"],
+    :root:not([data-theme="light"]) input[type="number"],
+    :root:not([data-theme="light"]) select { background: #2C2C2C; color: var(--couleur-texte); border-color: #444; }
+    :root:not([data-theme="light"]) .radio-pill { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
+    :root:not([data-theme="light"]) .match-card { background: #2C2C2C; border-color: #444; }
+    :root:not([data-theme="light"]) .match-card.termine { background: #1B3A1B; border-color: var(--couleur-succes); }
+    :root:not([data-theme="light"]) .match-card.forfait { background: #2A2A2A; border-color: #555; }
+    :root:not([data-theme="light"]) .match-card.en-cours { background: #3A3000; border-color: var(--couleur-accent); }
+    :root:not([data-theme="light"]) .tag-eleve { background: #1A3A5C; color: #B3D9FF; }
+    :root:not([data-theme="light"]) .stepper-btn { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
+    :root:not([data-theme="light"]) .btn-annuler { border-color: #555; color: #9E9E9E; }
+    :root:not([data-theme="light"]) .btn-fermer { background: #333; color: #CCC; }
+    :root:not([data-theme="light"]) .scoring-col-bleu { background: #0D2137; }
+    :root:not([data-theme="light"]) .scoring-col-rouge { background: #370D0D; }
+    :root:not([data-theme="light"]) .classement-table th { background: #1A3A6C; }
+    :root:not([data-theme="light"]) .classement-table td { border-bottom-color: #333; }
+    :root:not([data-theme="light"]) .classement-table tr:nth-child(even) { background: #252525; }
+    :root:not([data-theme="light"]) .classement-table .rang-1 { background: #3A3500; }
+    :root:not([data-theme="light"]) .classement-table .rang-2 { background: #252525; }
+    :root:not([data-theme="light"]) .classement-table .rang-3 { background: #3A2016; }
+    :root:not([data-theme="light"]) .historique-zone { background: #1E1E1E; }
+    :root:not([data-theme="light"]) .historique-ligne { border-bottom-color: #333; }
+    :root:not([data-theme="light"]) .timer-zone { background: #1E1E1E; }
+    :root:not([data-theme="light"]) .pied-page { border-top-color: rgba(128,128,128,0.2); }
+}
+:root[data-theme="dark"] body { background: var(--couleur-fond); }
+:root[data-theme="dark"] input[type="text"],
+:root[data-theme="dark"] input[type="date"],
+:root[data-theme="dark"] input[type="number"],
+:root[data-theme="dark"] select { background: #2C2C2C; color: var(--couleur-texte); border-color: #444; }
+:root[data-theme="dark"] .radio-pill { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
+:root[data-theme="dark"] .match-card { background: #2C2C2C; border-color: #444; }
+:root[data-theme="dark"] .match-card.termine { background: #1B3A1B; border-color: var(--couleur-succes); }
+:root[data-theme="dark"] .match-card.forfait { background: #2A2A2A; border-color: #555; }
+:root[data-theme="dark"] .match-card.en-cours { background: #3A3000; border-color: var(--couleur-accent); }
+:root[data-theme="dark"] .tag-eleve { background: #1A3A5C; color: #B3D9FF; }
+:root[data-theme="dark"] .stepper-btn { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
+:root[data-theme="dark"] .btn-annuler { border-color: #555; color: #9E9E9E; }
+:root[data-theme="dark"] .btn-fermer { background: #333; color: #CCC; }
+:root[data-theme="dark"] .scoring-col-bleu { background: #0D2137; }
+:root[data-theme="dark"] .scoring-col-rouge { background: #370D0D; }
+:root[data-theme="dark"] .classement-table th { background: #1A3A6C; }
+:root[data-theme="dark"] .classement-table td { border-bottom-color: #333; }
+:root[data-theme="dark"] .classement-table tr:nth-child(even) { background: #252525; }
+:root[data-theme="dark"] .classement-table .rang-1 { background: #3A3500; }
+:root[data-theme="dark"] .classement-table .rang-2 { background: #252525; }
+:root[data-theme="dark"] .classement-table .rang-3 { background: #3A2016; }
+:root[data-theme="dark"] .historique-zone { background: #1E1E1E; }
+:root[data-theme="dark"] .historique-ligne { border-bottom-color: #333; }
+:root[data-theme="dark"] .timer-zone { background: #1E1E1E; }
+:root[data-theme="dark"] .pied-page { border-top-color: rgba(128,128,128,0.2); }
 
 /* ===== ANIMATION FLASH SCORE ===== */
 @keyframes flash-score {
@@ -394,6 +469,17 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     border-radius: 10px; font-size: 0.75em; font-weight: 700;
     background: var(--couleur-accent); color: #fff;
 }
+.groupe-bloc { background: #FFFDE7; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+.msg-doublon { color: #C62828; font-size: 0.8em; margin-top: 4px; display: none; }
+.dq-badge { color: var(--couleur-danger); font-weight: 700; font-size: 0.8em; margin-left: 4px; }
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .groupe-bloc { background: #2C2800; }
+    :root:not([data-theme="light"]) .modale { background: #1E1E1E; color: var(--couleur-texte); }
+    :root:not([data-theme="light"]) .modale-header { border-bottom-color: #333; }
+}
+:root[data-theme="dark"] .groupe-bloc { background: #2C2800; }
+:root[data-theme="dark"] .modale { background: #1E1E1E; color: var(--couleur-texte); }
+:root[data-theme="dark"] .modale-header { border-bottom-color: #333; }
 </style>
 </head>
 <body>
@@ -401,8 +487,11 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 <!-- ==================== ÉCRAN 1 : CONFIGURATION ==================== -->
 <div id="ecran-config">
     <div class="en-tete">
-        <h1>Compteur Lutte</h1>
-        <p class="version">Version 0.1</p>
+        <div style="display:flex;justify-content:center;align-items:center;gap:12px">
+            <h1 style="flex:1;text-align:center">Compteur Lutte</h1>
+            <button onclick="document.getElementById('modale-aide').classList.remove('cache')" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2em;cursor:pointer;flex-shrink:0" aria-label="Aide">?</button>
+        </div>
+        <p class="version">Version 0.2</p>
     </div>
 
     <!-- Séance -->
@@ -491,6 +580,7 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 
     <!-- Actions -->
     <div class="actions-seance">
+        <button class="bouton bouton-outline bouton-sm" onclick="exporterCSV()">Exporter CSV</button>
         <button class="bouton bouton-outline bouton-sm" onclick="exporterJSON()">Exporter JSON</button>
         <button class="bouton bouton-outline bouton-sm" onclick="document.getElementById('import-json').click()">Importer JSON</button>
         <input type="file" id="import-json" accept=".json" class="cache" onchange="importerJSON(event)">
@@ -612,6 +702,55 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     </div>
 </div>
 
+<!-- ==================== MODALE AIDE ==================== -->
+<div id="modale-aide" class="modale-overlay cache">
+    <div class="modale" style="max-width:520px">
+        <div class="modale-header">
+            <h3>Aide — Compteur Lutte</h3>
+            <button class="btn-fermer" onclick="fermerModale('modale-aide')">&times;</button>
+        </div>
+        <div class="modale-body" style="font-size:0.9em;line-height:1.6">
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Déroulement</h4>
+            <ol style="margin-left:18px;margin-bottom:14px">
+                <li>Renseigner la classe, la date et l'enceinte</li>
+                <li>Créer les groupes et ajouter les élèves (4 minimum au total)</li>
+                <li>Appuyer sur <strong>Générer les combats</strong></li>
+                <li>Appuyer sur <strong>Commencer</strong> pour chaque combat</li>
+                <li>Démarrer le chrono, puis scorer en temps réel</li>
+                <li>Valider le combat à la fin du temps</li>
+            </ol>
+
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Actions de scoring</h4>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:0.9em">
+                <tr><td style="padding:4px 8px;font-weight:600;background:#E65100;color:#fff;border-radius:4px 0 0 0">Tomber</td><td style="padding:4px 8px;text-align:right"><strong>+50 pts</strong></td></tr>
+                <tr><td style="padding:4px 8px;font-weight:600;background:#7B1FA2;color:#fff">Mise en danger</td><td style="padding:4px 8px;text-align:right">+10 pts</td></tr>
+                <tr><td style="padding:4px 8px;font-weight:600;background:#AB47BC;color:#fff">1/2 Mise en danger</td><td style="padding:4px 8px;text-align:right">+5 pts</td></tr>
+                <tr><td style="padding:4px 8px;font-weight:600;background:#546E7A;color:#fff">Passage arrière</td><td style="padding:4px 8px;text-align:right">+2 pts</td></tr>
+                <tr><td style="padding:4px 8px;font-weight:600;background:var(--couleur-danger);color:#fff;border-radius:0 0 0 4px">Pénalité</td><td style="padding:4px 8px;text-align:right">&minus;10 pts</td></tr>
+            </table>
+
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Carton rouge</h4>
+            <p style="margin-bottom:14px">2 pénalités = carton rouge = disqualification. Le chrono est mis en pause, les scores du disqualifié passent à 0, et tous ses combats restants sont déclarés forfait.</p>
+
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Annulation</h4>
+            <p style="margin-bottom:14px">Le bouton <strong>Annuler</strong> sous chaque colonne défait la dernière action de ce lutteur (y compris un carton rouge).</p>
+
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Rotations</h4>
+            <p style="margin-bottom:14px">Quand tous les combats sont terminés et qu'au moins un groupe a 2-3 élèves, il est possible de relancer les combats (jusqu'à 3 rotations). L'ordre et les rôles changent à chaque rotation.</p>
+
+            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Exports</h4>
+            <p style="margin-bottom:14px"><strong>CSV</strong> : fichier tableur avec détail des combats et classement. <strong>JSON</strong> : sauvegarde complète réimportable. <strong>QR</strong> : classement anonymisé scannable.</p>
+
+            <div style="padding:10px;background:var(--couleur-fond);border-radius:10px;font-size:0.85em;color:var(--couleur-texte-clair)">
+                <strong>RGPD</strong> : les données des élèves restent exclusivement sur cette tablette (localStorage). Elles ne sont jamais transmises à un serveur. Le QR code et le CSV contiennent les prénoms pour le suivi pédagogique (usage interne). Utilisez <strong>Nouvelle séance</strong> pour effacer les données.
+            </div>
+        </div>
+        <div class="modale-footer">
+            <button class="bouton bouton-primaire bouton-sm" onclick="fermerModale('modale-aide')">Fermer</button>
+        </div>
+    </div>
+</div>
+
 <script>
 'use strict';
 
@@ -656,17 +795,18 @@ function formatTemps(sec) {
     return m + ':' + (s < 10 ? '0' : '') + s;
 }
 
+var audioCtx = null;
 function beep(freq, dur) {
     try {
-        var ctx = new (window.AudioContext || window.webkitAudioContext)();
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(audioCtx.destination);
         osc.frequency.value = freq || 800;
         gain.gain.value = 0.3;
         osc.start();
-        setTimeout(function() { osc.stop(); ctx.close(); }, dur || 200);
+        setTimeout(function() { osc.stop(); }, dur || 200);
     } catch(e) {}
 }
 
@@ -708,12 +848,12 @@ function afficherGroupes() {
     var html = '';
     for (var g = 0; g < etat.groupes.length; g++) {
         var gr = etat.groupes[g];
-        html += '<div style="margin-bottom:16px;padding:12px;background:#FFFDE7;border-radius:12px">';
+        html += '<div class="groupe-bloc">';
         html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
         html += '<label style="font-weight:700">Groupe</label>';
         html += '<input type="text" value="' + escH(gr.id) + '" style="width:70px;text-align:center;font-weight:700" ';
-        html += 'onchange="etat.groupes[' + g + '].id=this.value;sauvegarder()">';
-        html += '<span style="font-size:0.85em;color:#757575">(' + gr.eleves.length + ' élèves)</span>';
+        html += 'onchange="validerNomGroupe(' + g + ',this)">';
+        html += '<span style="font-size:0.85em;color:var(--couleur-texte-clair)">(' + gr.eleves.length + ' élèves)</span>';
         html += '</div>';
         html += '<div class="tags-container" id="tags-g' + g + '">';
         for (var e = 0; e < gr.eleves.length; e++) {
@@ -727,23 +867,43 @@ function afficherGroupes() {
         html += 'onkeydown="if(event.key===\'Enter\'){ajouterEleve(' + g + ');event.preventDefault()}">';
         html += '<button onclick="ajouterEleve(' + g + ')" aria-label="Ajouter">+</button>';
         html += '</div>';
+        html += '<div class="msg-doublon" id="msg-doublon-' + g + '">Ce prénom existe déjà</div>';
         html += '</div>';
     }
     zone.innerHTML = html;
 }
 
+function validerNomGroupe(gi, input) {
+    var val = input.value.trim();
+    if (!val) { input.value = etat.groupes[gi].id; return; }
+    for (var g = 0; g < etat.groupes.length; g++) {
+        if (g !== gi && etat.groupes[g].id.toLowerCase() === val.toLowerCase()) {
+            input.value = etat.groupes[gi].id;
+            return;
+        }
+    }
+    etat.groupes[gi].id = val;
+    sauvegarder();
+}
+
 function ajouterEleve(gi) {
     var inp = document.getElementById('inp-eleve-' + gi);
+    var msgEl = document.getElementById('msg-doublon-' + gi);
     var nom = inp.value.trim();
     if (!nom) return;
     var doublon = false;
     for (var g = 0; g < etat.groupes.length; g++)
         for (var e = 0; e < etat.groupes[g].eleves.length; e++)
             if (etat.groupes[g].eleves[e].toLowerCase() === nom.toLowerCase()) doublon = true;
-    if (doublon) { inp.style.borderColor = '#C62828'; return; }
+    if (doublon) {
+        inp.style.borderColor = '#C62828';
+        if (msgEl) msgEl.style.display = 'block';
+        return;
+    }
     etat.groupes[gi].eleves.push(nom);
     inp.value = '';
     inp.style.borderColor = '';
+    if (msgEl) msgEl.style.display = 'none';
     afficherGroupes();
     sauvegarder();
     setTimeout(function() { document.getElementById('inp-eleve-' + gi).focus(); }, 50);
@@ -1026,7 +1186,7 @@ function afficherListeMatchs() {
                 html += '<div style="text-align:center;margin:16px 0 8px;padding:8px;background:var(--couleur-primaire);color:white;border-radius:10px;font-weight:700">Rotation ' + rotationAffichee + '</div>';
             }
         }
-        var cls = m.termine ? (m.forfait ? 'forfait' : 'termine') : '';
+        var cls = m.termine ? (m.forfait ? 'forfait' : 'termine') : (i === etat.currentMatch ? 'en-cours' : '');
         html += '<div class="match-card ' + cls + '">';
         html += '<div class="match-header">';
         html += '<span>Combat ' + (i + 1) + '/' + etat.matchs.length + '</span>';
@@ -1469,6 +1629,7 @@ function confirmerValidation() {
     etat.currentMatch = -1;
     afficherListeMatchs();
     sauvegarder();
+    window.scrollTo(0, 0);
 }
 
 function retourSansValider() {
@@ -1483,6 +1644,7 @@ function retourSansValider() {
             etat.currentMatch = -1;
             afficherListeMatchs();
             sauvegarder();
+            window.scrollTo(0, 0);
         });
 }
 
@@ -1565,7 +1727,10 @@ function afficherClassement(parGroupe) {
         }
 
         var classement = [];
-        for (var nom in stats) classement.push({ nom: nom, s: stats[nom] });
+        for (var nom in stats) {
+            if (!stats.hasOwnProperty(nom)) continue;
+            classement.push({ nom: nom, s: stats[nom] });
+        }
 
         if (etat.modeClassement === 'victoires') {
             classement.sort(function(a, b) {
@@ -1589,7 +1754,8 @@ function afficherClassement(parGroupe) {
             var cls = c === 0 ? 'rang-1' : c === 1 ? 'rang-2' : c === 2 ? 'rang-3' : '';
             html += '<tr class="' + cls + '">';
             html += '<td>' + (c + 1) + '</td>';
-            html += '<td style="text-align:left;font-weight:600">' + escH(r.nom) + '</td>';
+            var estDQ = etat.disqualifies.indexOf(r.nom) !== -1;
+            html += '<td style="text-align:left;font-weight:600' + (estDQ ? ';text-decoration:line-through;opacity:0.6' : '') + '">' + escH(r.nom) + (estDQ ? ' <span class="dq-badge">DQ</span>' : '') + '</td>';
             html += '<td>' + r.s.victoires + '</td>';
             html += '<td>' + r.s.nuls + '</td>';
             html += '<td>' + r.s.defaites + '</td>';
@@ -1624,7 +1790,7 @@ function exporterJSON() {
     lireConfig();
     var data = {
         app: 'CompteurLutte',
-        version: '0.1',
+        version: '0.2',
         exportDate: new Date().toISOString(),
         seance: etat
     };
@@ -1635,6 +1801,110 @@ function exporterJSON() {
         AndroidDownload.download(nomFichier, 'application/json', JSON.stringify(data, null, 2));
         return;
     }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nomFichier;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+}
+
+function exporterCSV() {
+    lireConfig();
+    if (etat.matchs.length === 0) { afficherMessage('Aucun combat à exporter.'); return; }
+    var sep = ';';
+    var lignes = [];
+    lignes.push('Classe' + sep + 'Date' + sep + 'Enceinte' + sep + 'Mode');
+    lignes.push(etat.classe + sep + etat.date + sep + etat.enceinte + sep + etat.modeClassement);
+    lignes.push('');
+    lignes.push('Combat' + sep + 'Rotation' + sep + 'Groupe' + sep + 'Lutteur Bleu' + sep + 'Lutteur Rouge' + sep +
+        'Tomber B' + sep + 'MeD B' + sep + '1/2MeD B' + sep + 'PA B' + sep + 'Pen B' + sep + 'Total B' + sep +
+        'Tomber R' + sep + 'MeD R' + sep + '1/2MeD R' + sep + 'PA R' + sep + 'Pen R' + sep + 'Total R' + sep +
+        'Vainqueur' + sep + 'Forfait' + sep + 'Carton Rouge');
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var m = etat.matchs[i];
+        var s1 = calculerTotal(m.scores1);
+        var s2 = calculerTotal(m.scores2);
+        if (m.cartonRouge1) s1 = 0;
+        if (m.cartonRouge2) s2 = 0;
+        var cr = '';
+        if (m.cartonRouge1) cr = m.lutteur1;
+        if (m.cartonRouge2) cr = m.lutteur2;
+        lignes.push((i + 1) + sep + (m.rotation || 1) + sep + m.groupeId + sep +
+            m.lutteur1 + sep + m.lutteur2 + sep +
+            m.scores1.tomber + sep + m.scores1.miseDanger + sep + m.scores1.demiMiseDanger + sep +
+            m.scores1.passageArriere + sep + m.scores1.penalite + sep + s1 + sep +
+            m.scores2.tomber + sep + m.scores2.miseDanger + sep + m.scores2.demiMiseDanger + sep +
+            m.scores2.passageArriere + sep + m.scores2.penalite + sep + s2 + sep +
+            (m.vainqueur || 'Nul') + sep + (m.forfait ? 'Oui' : '') + sep + cr);
+    }
+    lignes.push('');
+    lignes.push('CLASSEMENT');
+    for (var g = 0; g < etat.groupes.length; g++) {
+        var gr = etat.groupes[g];
+        lignes.push('');
+        lignes.push('Groupe ' + gr.id);
+        var entetes = '#' + sep + 'Eleve' + sep + 'V' + sep + 'N' + sep + 'D';
+        if (etat.modeClassement === 'victoires') entetes += sep + 'Pts class.';
+        entetes += sep + 'Pts totaux';
+        lignes.push(entetes);
+        var stats = {};
+        for (var e = 0; e < gr.eleves.length; e++) {
+            stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+        }
+        for (var j = 0; j < etat.matchs.length; j++) {
+            var mx = etat.matchs[j];
+            if (mx.groupeId !== gr.id || !mx.termine) continue;
+            var t1 = calculerTotal(mx.scores1), t2 = calculerTotal(mx.scores2);
+            if (etat.disqualifies.indexOf(mx.lutteur1) !== -1) t1 = 0;
+            if (etat.disqualifies.indexOf(mx.lutteur2) !== -1) t2 = 0;
+            if (stats[mx.lutteur1]) stats[mx.lutteur1].ptsTotaux += t1;
+            if (stats[mx.lutteur2]) stats[mx.lutteur2].ptsTotaux += t2;
+            if (mx.vainqueur === mx.lutteur1) {
+                if (stats[mx.lutteur1]) { stats[mx.lutteur1].victoires++; stats[mx.lutteur1].ptsClass += 3; }
+                if (stats[mx.lutteur2]) stats[mx.lutteur2].defaites++;
+            } else if (mx.vainqueur === mx.lutteur2) {
+                if (stats[mx.lutteur2]) { stats[mx.lutteur2].victoires++; stats[mx.lutteur2].ptsClass += 3; }
+                if (stats[mx.lutteur1]) stats[mx.lutteur1].defaites++;
+            } else {
+                if (stats[mx.lutteur1]) { stats[mx.lutteur1].nuls++; stats[mx.lutteur1].ptsClass += 1; }
+                if (stats[mx.lutteur2]) { stats[mx.lutteur2].nuls++; stats[mx.lutteur2].ptsClass += 1; }
+            }
+        }
+        var classement = [];
+        for (var nom in stats) {
+            if (!stats.hasOwnProperty(nom)) continue;
+            classement.push({ nom: nom, s: stats[nom] });
+        }
+        if (etat.modeClassement === 'victoires') {
+            classement.sort(function(a, b) {
+                if (b.s.ptsClass !== a.s.ptsClass) return b.s.ptsClass - a.s.ptsClass;
+                return b.s.ptsTotaux - a.s.ptsTotaux;
+            });
+        } else {
+            classement.sort(function(a, b) {
+                if (b.s.ptsTotaux !== a.s.ptsTotaux) return b.s.ptsTotaux - a.s.ptsTotaux;
+                return b.s.victoires - a.s.victoires;
+            });
+        }
+        for (var c = 0; c < classement.length; c++) {
+            var r = classement[c];
+            var dq = etat.disqualifies.indexOf(r.nom) !== -1;
+            var ligne = (c + 1) + sep + r.nom + (dq ? ' (DQ)' : '') + sep +
+                r.s.victoires + sep + r.s.nuls + sep + r.s.defaites;
+            if (etat.modeClassement === 'victoires') ligne += sep + r.s.ptsClass;
+            ligne += sep + r.s.ptsTotaux;
+            lignes.push(ligne);
+        }
+    }
+    var csv = '﻿' + lignes.join('\r\n');
+    var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_' + etat.date + '.csv';
+    if (typeof AndroidDownload !== 'undefined') {
+        AndroidDownload.download(nomFichier, 'text/csv', csv);
+        return;
+    }
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = nomFichier;
@@ -1655,7 +1925,27 @@ function importerJSON(evt) {
                 afficherMessage('Ce fichier n\'est pas un export Compteur Lutte.');
                 return;
             }
-            etat = data.seance;
+            var s = data.seance;
+            if (!s || !Array.isArray(s.groupes) || !Array.isArray(s.matchs)) {
+                afficherMessage('Fichier corrompu : structure invalide.');
+                return;
+            }
+            for (var gi = 0; gi < s.groupes.length; gi++) {
+                var gx = s.groupes[gi];
+                if (!gx || typeof gx.id !== 'string' || !Array.isArray(gx.eleves)) {
+                    afficherMessage('Fichier corrompu : groupe ' + (gi + 1) + ' invalide.');
+                    return;
+                }
+            }
+            for (var mi = 0; mi < s.matchs.length; mi++) {
+                var mx = s.matchs[mi];
+                if (!mx || typeof mx.lutteur1 !== 'string' || typeof mx.lutteur2 !== 'string' ||
+                    !mx.scores1 || !mx.scores2) {
+                    afficherMessage('Fichier corrompu : match ' + (mi + 1) + ' invalide.');
+                    return;
+                }
+            }
+            etat = s;
             ecrireConfig();
             afficherGroupes();
             afficherListeMatchs();
@@ -1679,7 +1969,7 @@ function exporterQR() {
         return;
     }
 
-    var payload = { a: 'CL', c: etat.classe, d: etat.date, e: etat.enceinte, m: etat.modeClassement, g: [] };
+    var payload = { c: etat.classe, d: etat.date, e: etat.enceinte, m: etat.modeClassement, g: [] };
     for (var g = 0; g < etat.groupes.length; g++) {
         var gr = etat.groupes[g];
         var stats = {};
@@ -1706,11 +1996,14 @@ function exporterQR() {
             }
         }
         var arr = [];
-        for (var nom in stats) arr.push({ n: nom, v: stats[nom].v, d: stats[nom].d, p: stats[nom].p, pc: stats[nom].pc });
+        for (var nom in stats) {
+            if (!stats.hasOwnProperty(nom)) continue;
+            arr.push({ n: nom, v: stats[nom].v, nl: stats[nom].n, d: stats[nom].d, p: stats[nom].p, pc: stats[nom].pc });
+        }
         payload.g.push({ id: gr.id, r: arr });
     }
 
-    var jsonStr = JSON.stringify(payload);
+    var jsonStr = 'CL|' + JSON.stringify(payload);
     var zone = document.getElementById('zone-qr');
     zone.innerHTML = '';
 
@@ -2168,6 +2461,21 @@ function ouvrirConfirmation(titre, message, callback) {
 
 function fermerModale(id) { document.getElementById(id).classList.add('cache'); }
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var modales = ['modale-qr', 'modale-validation', 'modale-confirm', 'modale-aide'];
+        for (var i = 0; i < modales.length; i++) {
+            var el = document.getElementById(modales[i]);
+            if (el && !el.classList.contains('cache')) { fermerModale(modales[i]); break; }
+        }
+    }
+});
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modale-overlay')) {
+        fermerModale(e.target.id);
+    }
+});
+
 function afficherMessage(msg) {
     document.getElementById('confirm-titre').textContent = 'Information';
     document.getElementById('confirm-message').textContent = msg;
@@ -2232,6 +2540,23 @@ document.getElementById('inp-date').addEventListener('change', function() { lire
 /* ========== INITIALISATION ========== */
 (function init() {
     charger();
+    if (etat.date) {
+        var joursEcoules = Math.floor((Date.now() - new Date(etat.date).getTime()) / 86400000);
+        if (joursEcoules > 30 && etat.matchs.length > 0) {
+            ouvrirConfirmation('Données anciennes',
+                'La séance date de plus de 30 jours (' + etat.date + '). Voulez-vous effacer les données ?',
+                function() {
+                    etat = creerEtatVide();
+                    ecrireConfig();
+                    afficherGroupes();
+                    document.getElementById('section-matchs').classList.add('cache');
+                    document.getElementById('section-classement').classList.add('cache');
+                    document.getElementById('zone-qr-btn').classList.add('cache');
+                    document.getElementById('zone-relancer').classList.add('cache');
+                    sauvegarder();
+                });
+        }
+    }
     ecrireConfig();
     afficherGroupes();
     if (etat.matchs.length > 0) afficherListeMatchs();

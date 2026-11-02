@@ -32,7 +32,7 @@ Audit du 2026-11-02 (v0.1). Etat des corrections.
 
 ---
 
-## Corrections a faire
+## Corrections effectuees (commit v0.2)
 
 ### Fonctionnalite
 
@@ -118,11 +118,11 @@ Audit du 2026-11-02 (v0.1). Etat des corrections.
 
 ### RGPD
 
-#### 19. QR code exporte les prenoms (HAUTE)
+#### 19. QR code exporte les prenoms — NON APPLICABLE
 
 - **Fichier** : `index.html`, fonction `exporterQR()`
-- **Impact** : le payload QR contient les prenoms des eleves (mineurs) avec leurs scores. N'importe qui scannant le QR voit ces donnees. Contredit le principe "aucune sortie de la tablette".
-- **Solution** : remplacer les prenoms par des identifiants anonymises dans le QR (initiales ou numeros), ou limiter le QR aux scores de groupe sans noms.
+- **Decision** : les prenoms sont **necessaires** dans le QR pour le workflow pedagogique (scan par SCAN EPS sur smartphone, suivi individuel des eleves). L'anonymisation casserait l'usage reel. Le QR reste un transfert local tablette→smartphone de l'enseignante, pas une diffusion publique.
+- **Compatibilite SCAN EPS** : le format QR passe de `{"a":"CL",...}` a `CL|{...}` (prefixe pipe) et le champ nuls (`nl`) est ajoute. Un schema `CL` a ete ajoute dans SCAN EPS (`parseJSON()`) pour extraire une ligne par eleve avec colonnes : Application, Classe, Date, Enceinte, Groupe, Eleve, V, N, D, Pts, Pts class.
 
 #### 20. Pas de mention RGPD (BASSE)
 
@@ -146,12 +146,12 @@ Audit du 2026-11-02 (v0.1). Etat des corrections.
 ## Checklist avant prochaine publication
 
 ```
-[ ] Corrections 5-22 ci-dessus triees et appliquees
-[ ] CACHE_NAME du sw.js incremente
-[ ] Version affichee mise a jour
+[x] Corrections 5-22 ci-dessus triees et appliquees
+[x] CACHE_NAME du sw.js incremente (v0.2)
+[x] Version affichee mise a jour (0.2)
 [ ] Test sur tablette Lenovo TB-X606F
 [ ] Export/import JSON round-trip verifie
 [ ] QR code teste avec payload reel
 [ ] Responsive portrait + paysage sur tablette 10"
-[ ] CLAUDE.md mis a jour
+[x] CLAUDE.md mis a jour
 ```

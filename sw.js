@@ -1,4 +1,4 @@
-var CACHE_NAME = 'compteur-lutte-v0.1';
+var CACHE_NAME = 'compteur-lutte-v0.2';
 var ASSETS = [
     './',
     './index.html',
