@@ -1090,7 +1090,7 @@ function calculerTotal(scores) {
 }
 
 /* ========== CHRONOMÈTRE ========== */
-var timer = { intervalId: null, etat: 'IDLE', secondes: 60, delaiRestant: 0 };
+var timer = { intervalId: null, etat: 'IDLE', secondes: 60, delaiRestant: 0, pausedFrom: null };
 
 function lancerCombat(index) {
     etat.currentMatch = index;
@@ -1117,6 +1117,7 @@ function lancerCombat(index) {
     timer.etat = 'IDLE';
     timer.secondes = etat.dureeCombat;
     timer.delaiRestant = 0;
+    timer.pausedFrom = null;
     majTimerUI();
     majScoresUI();
     majHistoriqueUI();
@@ -1127,7 +1128,7 @@ function lancerCombat(index) {
     btnStart.className = 'timer-btn timer-btn-start';
     btnStart.disabled = false;
 
-    try { navigator.wakeLock.request('screen'); } catch(e) {}
+    requestWakeLock();
     try {
         document.documentElement.requestFullscreen ?
             document.documentElement.requestFullscreen() :
@@ -1145,11 +1146,12 @@ function toggleTimer() {
     } else if (timer.etat === 'SALUT' || timer.etat === 'COMBAT') {
         clearInterval(timer.intervalId);
         timer.intervalId = null;
+        timer.pausedFrom = timer.etat;
         timer.etat = 'PAUSE';
         majTimerUI();
     } else if (timer.etat === 'PAUSE') {
         demarrerInterval();
-        timer.etat = timer.secondes > 0 ? 'COMBAT' : 'TERMINE';
+        timer.etat = timer.pausedFrom === 'SALUT' ? 'SALUT' : (timer.secondes > 0 ? 'COMBAT' : 'TERMINE');
     } else if (timer.etat === 'TERMINE') {
         return;
     }
@@ -1202,6 +1204,7 @@ function faireResetTimer() {
     timer.etat = 'IDLE';
     timer.secondes = etat.dureeCombat;
     timer.delaiRestant = 0;
+    timer.pausedFrom = null;
     majTimerUI();
     majScoringEnabled();
 }
@@ -1256,7 +1259,7 @@ function majScoringEnabled() {
     var zone = document.getElementById('scoring-zone');
     var m = etat.currentMatch >= 0 ? etat.matchs[etat.currentMatch] : null;
     var cartonActif = m && (m.cartonRouge1 || m.cartonRouge2);
-    var timerActif = timer.etat === 'COMBAT' || timer.etat === 'PAUSE' || timer.etat === 'TERMINE';
+    var timerActif = timer.etat === 'COMBAT' || timer.etat === 'PAUSE';
     zone.classList.toggle('scoring-disabled', !timerActif);
     zone.classList.toggle('scoring-carton-rouge', timerActif && cartonActif);
 }
@@ -2196,8 +2199,14 @@ function confirmerNouvelle() {
 
 /* ========== WAKE LOCK + FULLSCREEN ========== */
 var wakeLock = null;
-async function requestWakeLock() {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+function requestWakeLock() {
+    try {
+        if (navigator.wakeLock) {
+            navigator.wakeLock.request('screen').then(function(lock) {
+                wakeLock = lock;
+            }).catch(function() {});
+        }
+    } catch(e) {}
 }
 document.addEventListener('visibilitychange', function() {
     if (document.visibilityState === 'visible') requestWakeLock();
