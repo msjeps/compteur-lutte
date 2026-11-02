@@ -455,6 +455,92 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 :root[data-theme="dark"] .timer-zone { background: #1E1E1E; }
 :root[data-theme="dark"] .pied-page { border-top-color: rgba(128,128,128,0.2); }
 
+/* ===== TOGGLE SWITCH ===== */
+.toggle { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+    position: absolute; inset: 0; background: #BDBDBD; border-radius: 26px;
+    cursor: pointer; transition: background 0.2s;
+}
+.toggle-slider::before {
+    content: ''; position: absolute; width: 20px; height: 20px;
+    left: 3px; bottom: 3px; background: #fff; border-radius: 50%;
+    transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--couleur-succes); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+/* ===== RÉGLAGES ===== */
+.reglages-section {
+    padding: 16px; border-bottom: 1px solid #E0E0E0;
+}
+.reglages-section:last-child { border-bottom: none; }
+.reglages-section h4 {
+    font-size: 1em; color: var(--couleur-primaire);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.reglage-ligne {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 10px 0; min-height: 44px;
+}
+.reglage-ligne span { font-size: 0.9em; flex: 1; }
+.action-config-ligne {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px; margin-bottom: 6px;
+    background: #FAFAFA; border-radius: 10px; border: 1px solid #E0E0E0;
+}
+.action-nom-input {
+    flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid #E0E0E0;
+    border-radius: 6px; font-size: 0.85em; font-family: inherit; background: #fff;
+}
+.action-pts-wrap {
+    display: flex; align-items: center; gap: 2px; flex-shrink: 0;
+}
+.action-pts-input {
+    width: 55px; padding: 6px 4px; border: 1px solid #E0E0E0;
+    border-radius: 6px; font-size: 0.85em; font-family: inherit;
+    text-align: center; background: #fff;
+}
+.action-pts-wrap .unite { font-size: 0.75em; color: var(--couleur-texte-clair); }
+.action-couleur {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 2px solid rgba(0,0,0,0.15); flex-shrink: 0;
+}
+.action-suppr {
+    width: 28px; height: 28px; border-radius: 50%; border: none;
+    background: transparent; color: #BDBDBD; font-size: 1.2em;
+    cursor: pointer; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center;
+}
+.action-suppr:active { color: var(--couleur-danger); }
+.action-defaut .action-suppr { visibility: hidden; }
+.palette-couleurs {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 8px;
+    background: var(--couleur-blanc); border-radius: 10px;
+    box-shadow: var(--ombre-forte); position: absolute; z-index: 10;
+}
+.palette-couleur {
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent;
+}
+.palette-couleur:active, .palette-couleur.selected { border-color: var(--couleur-texte); }
+.msg-config { font-size: 0.8em; margin-top: 4px; display: none; }
+.msg-config.erreur { color: var(--couleur-danger); }
+.msg-config.succes { color: var(--couleur-succes); }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .action-config-ligne { background: #2C2C2C; border-color: #444; }
+    :root:not([data-theme="light"]) .action-nom-input,
+    :root:not([data-theme="light"]) .action-pts-input { background: #1E1E1E; border-color: #444; color: var(--couleur-texte); }
+    :root:not([data-theme="light"]) .reglages-section { border-bottom-color: #333; }
+    :root:not([data-theme="light"]) .toggle-slider { background: #555; }
+}
+:root[data-theme="dark"] .action-config-ligne { background: #2C2C2C; border-color: #444; }
+:root[data-theme="dark"] .action-nom-input,
+:root[data-theme="dark"] .action-pts-input { background: #1E1E1E; border-color: #444; color: var(--couleur-texte); }
+:root[data-theme="dark"] .reglages-section { border-bottom-color: #333; }
+:root[data-theme="dark"] .toggle-slider { background: #555; }
+
 /* ===== ANIMATION FLASH SCORE ===== */
 @keyframes flash-score {
     0% { transform: scale(1); }
@@ -489,9 +575,9 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     <div class="en-tete">
         <div style="display:flex;justify-content:center;align-items:center;gap:12px">
             <h1 style="flex:1;text-align:center">Compteur Lutte</h1>
-            <button onclick="document.getElementById('modale-aide').classList.remove('cache')" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2em;cursor:pointer;flex-shrink:0" aria-label="Aide">?</button>
+            <button onclick="ouvrirReglages()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2em;cursor:pointer;flex-shrink:0" aria-label="Réglages">&#9881;</button>
         </div>
-        <p class="version">Version 0.2</p>
+        <p class="version">Version 0.3</p>
     </div>
 
     <!-- Séance -->
@@ -621,26 +707,14 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
             <div class="scoring-nom" id="nom-l1">---</div>
             <div class="scoring-points" id="pts-l1">0</div>
             <div class="scoring-avert" id="avert-l1">0 avert.</div>
-            <div class="scoring-btns">
-                <button class="btn-action btn-tomber" onclick="marquerAction(1,'tomber')"><span>Tomber</span><span class="pts">+50</span></button>
-                <button class="btn-action btn-med" onclick="marquerAction(1,'miseDanger')"><span>Mise en danger</span><span class="pts">+10</span></button>
-                <button class="btn-action btn-dmed" onclick="marquerAction(1,'demiMiseDanger')"><span>1/2 Mise en D.</span><span class="pts">+5</span></button>
-                <button class="btn-action btn-pa" onclick="marquerAction(1,'passageArriere')"><span>Pass. arrière</span><span class="pts">+2</span></button>
-                <button class="btn-action btn-penalite" onclick="marquerAction(1,'penalite')"><span>Pénalité</span><span class="pts">&minus;10</span></button>
-            </div>
+            <div class="scoring-btns" id="btns-l1"></div>
             <button class="btn-annuler" onclick="annulerAction(1)">&#8617; Annuler</button>
         </div>
         <div class="scoring-col scoring-col-rouge" id="col-l2">
             <div class="scoring-nom" id="nom-l2">---</div>
             <div class="scoring-points" id="pts-l2">0</div>
             <div class="scoring-avert" id="avert-l2">0 avert.</div>
-            <div class="scoring-btns">
-                <button class="btn-action btn-tomber" onclick="marquerAction(2,'tomber')"><span>Tomber</span><span class="pts">+50</span></button>
-                <button class="btn-action btn-med" onclick="marquerAction(2,'miseDanger')"><span>Mise en danger</span><span class="pts">+10</span></button>
-                <button class="btn-action btn-dmed" onclick="marquerAction(2,'demiMiseDanger')"><span>1/2 Mise en D.</span><span class="pts">+5</span></button>
-                <button class="btn-action btn-pa" onclick="marquerAction(2,'passageArriere')"><span>Pass. arrière</span><span class="pts">+2</span></button>
-                <button class="btn-action btn-penalite" onclick="marquerAction(2,'penalite')"><span>Pénalité</span><span class="pts">&minus;10</span></button>
-            </div>
+            <div class="scoring-btns" id="btns-l2"></div>
             <button class="btn-annuler" onclick="annulerAction(2)">&#8617; Annuler</button>
         </div>
     </div>
@@ -702,51 +776,103 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     </div>
 </div>
 
-<!-- ==================== MODALE AIDE ==================== -->
-<div id="modale-aide" class="modale-overlay cache">
+<!-- ==================== MODALE RÉGLAGES ==================== -->
+<div id="modale-reglages" class="modale-overlay cache">
     <div class="modale" style="max-width:520px">
         <div class="modale-header">
-            <h3>Aide — Compteur Lutte</h3>
-            <button class="btn-fermer" onclick="fermerModale('modale-aide')">&times;</button>
+            <h3>&#9881; Réglages</h3>
+            <button class="btn-fermer" onclick="fermerReglages()">&times;</button>
         </div>
-        <div class="modale-body" style="font-size:0.9em;line-height:1.6">
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Déroulement</h4>
-            <ol style="margin-left:18px;margin-bottom:14px">
-                <li>Renseigner la classe, la date et l'enceinte</li>
-                <li>Créer les groupes et ajouter les élèves (4 minimum au total)</li>
-                <li>Appuyer sur <strong>Générer les combats</strong></li>
-                <li>Appuyer sur <strong>Commencer</strong> pour chaque combat</li>
-                <li>Démarrer le chrono, puis scorer en temps réel</li>
-                <li>Valider le combat à la fin du temps</li>
-            </ol>
+        <div class="modale-body" style="padding:0">
+            <!-- Sons -->
+            <div class="reglages-section">
+                <h4>&#128266; Sons</h4>
+                <div class="reglage-ligne">
+                    <span>Bips sur les actions de scoring</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="cfg-bip-actions" onchange="majConfigAudio()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="reglage-ligne">
+                    <span>Décompte audio (5 dernières secondes)</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="cfg-decompte-audio" onchange="majConfigAudio()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="reglage-ligne">
+                    <span>Bip de début et fin de combat</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="cfg-bip-debut-fin" onchange="majConfigAudio()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
 
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Actions de scoring</h4>
-            <table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:0.9em">
-                <tr><td style="padding:4px 8px;font-weight:600;background:#E65100;color:#fff;border-radius:4px 0 0 0">Tomber</td><td style="padding:4px 8px;text-align:right"><strong>+50 pts</strong></td></tr>
-                <tr><td style="padding:4px 8px;font-weight:600;background:#7B1FA2;color:#fff">Mise en danger</td><td style="padding:4px 8px;text-align:right">+10 pts</td></tr>
-                <tr><td style="padding:4px 8px;font-weight:600;background:#AB47BC;color:#fff">1/2 Mise en danger</td><td style="padding:4px 8px;text-align:right">+5 pts</td></tr>
-                <tr><td style="padding:4px 8px;font-weight:600;background:#546E7A;color:#fff">Passage arrière</td><td style="padding:4px 8px;text-align:right">+2 pts</td></tr>
-                <tr><td style="padding:4px 8px;font-weight:600;background:var(--couleur-danger);color:#fff;border-radius:0 0 0 4px">Pénalité</td><td style="padding:4px 8px;text-align:right">&minus;10 pts</td></tr>
-            </table>
+            <!-- Configuration avancée -->
+            <div class="reglages-section">
+                <h4>&#128274; Configuration avancée</h4>
+                <div id="zone-mdp-config">
+                    <p style="font-size:0.85em;color:var(--couleur-texte-clair);margin-bottom:10px">Accès réservé à l'enseignant</p>
+                    <div style="display:flex;gap:8px">
+                        <input type="password" id="inp-mdp-config" placeholder="Mot de passe" style="flex:1" onkeydown="if(event.key==='Enter'){verifierMdpConfig();event.preventDefault()}">
+                        <button class="bouton bouton-primaire bouton-sm" style="width:auto;min-width:80px" onclick="verifierMdpConfig()">Valider</button>
+                    </div>
+                    <div id="msg-mdp-erreur" class="msg-config erreur">Mot de passe incorrect</div>
+                </div>
+                <div id="zone-config-avancee" class="cache">
+                    <p style="font-size:0.85em;color:var(--couleur-texte-clair);margin-bottom:10px">Actions de scoring (max 10 au total, 6 actives)</p>
+                    <div id="zone-liste-actions"></div>
+                    <button class="bouton bouton-outline bouton-sm" onclick="ajouterActionConfig()" id="btn-ajouter-action" style="margin-top:10px">+ Ajouter une action</button>
+                    <div id="msg-actions" class="msg-config"></div>
 
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Carton rouge</h4>
-            <p style="margin-bottom:14px">2 pénalités = carton rouge = disqualification. Le chrono est mis en pause, les scores du disqualifié passent à 0, et tous ses combats restants sont déclarés forfait.</p>
+                    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #E0E0E0">
+                        <h4 style="margin-bottom:8px;font-size:0.95em;color:var(--couleur-secondaire)">Modifier le mot de passe</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <input type="password" id="inp-nouveau-mdp" placeholder="Nouveau mot de passe" style="flex:1;min-width:140px" onkeydown="if(event.key==='Enter'){changerMdp();event.preventDefault()}">
+                            <button class="bouton bouton-secondaire bouton-sm" style="width:auto;min-width:100px" onclick="changerMdp()">Changer</button>
+                        </div>
+                        <div id="msg-mdp-change" class="msg-config"></div>
+                    </div>
+                </div>
+            </div>
 
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Annulation</h4>
-            <p style="margin-bottom:14px">Le bouton <strong>Annuler</strong> sous chaque colonne défait la dernière action de ce lutteur (y compris un carton rouge).</p>
+            <!-- Aide -->
+            <div class="reglages-section" style="font-size:0.9em;line-height:1.6">
+                <h4>&#10067; Aide</h4>
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Déroulement</h4>
+                <ol style="margin-left:18px;margin-bottom:14px">
+                    <li>Renseigner la classe, la date et l'enceinte</li>
+                    <li>Créer les groupes et ajouter les élèves (4 minimum au total)</li>
+                    <li>Appuyer sur <strong>Générer les combats</strong></li>
+                    <li>Appuyer sur <strong>Commencer</strong> pour chaque combat</li>
+                    <li>Démarrer le chrono, puis scorer en temps réel</li>
+                    <li>Valider le combat à la fin du temps</li>
+                </ol>
 
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Rotations</h4>
-            <p style="margin-bottom:14px">Quand tous les combats sont terminés et qu'au moins un groupe a 2-3 élèves, il est possible de relancer les combats (jusqu'à 3 rotations). L'ordre et les rôles changent à chaque rotation.</p>
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Actions de scoring</h4>
+                <div id="aide-table-actions"></div>
 
-            <h4 style="margin-bottom:8px;color:var(--couleur-primaire)">Exports</h4>
-            <p style="margin-bottom:14px"><strong>CSV</strong> : fichier tableur avec détail des combats et classement. <strong>JSON</strong> : sauvegarde complète réimportable. <strong>QR</strong> : classement anonymisé scannable.</p>
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Carton rouge</h4>
+                <p style="margin-bottom:14px">2 pénalités = carton rouge = disqualification. Le chrono est mis en pause, les scores du disqualifié passent à 0, et tous ses combats restants sont déclarés forfait.</p>
 
-            <div style="padding:10px;background:var(--couleur-fond);border-radius:10px;font-size:0.85em;color:var(--couleur-texte-clair)">
-                <strong>RGPD</strong> : les données des élèves restent exclusivement sur cette tablette (localStorage). Elles ne sont jamais transmises à un serveur. Le QR code et le CSV contiennent les prénoms pour le suivi pédagogique (usage interne). Utilisez <strong>Nouvelle séance</strong> pour effacer les données.
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Annulation</h4>
+                <p style="margin-bottom:14px">Le bouton <strong>Annuler</strong> sous chaque colonne défait la dernière action de ce lutteur (y compris un carton rouge).</p>
+
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Rotations</h4>
+                <p style="margin-bottom:14px">Quand tous les combats sont terminés et qu'au moins un groupe a 2-3 élèves, il est possible de relancer les combats (jusqu'à 3 rotations). L'ordre et les rôles changent à chaque rotation.</p>
+
+                <h4 style="margin-bottom:8px;color:var(--couleur-primaire);font-size:0.95em">Exports</h4>
+                <p style="margin-bottom:14px"><strong>CSV</strong> : fichier tableur avec détail des combats et classement. <strong>JSON</strong> : sauvegarde complète réimportable. <strong>QR</strong> : classement anonymisé scannable.</p>
+
+                <div style="padding:10px;background:var(--couleur-fond);border-radius:10px;font-size:0.85em;color:var(--couleur-texte-clair)">
+                    <strong>RGPD</strong> : les données des élèves restent exclusivement sur cette tablette (localStorage). Elles ne sont jamais transmises à un serveur. Le QR code et le CSV contiennent les prénoms pour le suivi pédagogique (usage interne). Utilisez <strong>Nouvelle séance</strong> pour effacer les données.
+                </div>
             </div>
         </div>
         <div class="modale-footer">
-            <button class="bouton bouton-primaire bouton-sm" onclick="fermerModale('modale-aide')">Fermer</button>
+            <button class="bouton bouton-primaire bouton-sm" onclick="fermerReglages()">Fermer</button>
         </div>
     </div>
 </div>
@@ -755,14 +881,115 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 'use strict';
 
 /* ========== CONSTANTES ========== */
-var ACTIONS = {
-    tomber:          { label: 'Tomber',          pts: 50 },
-    miseDanger:      { label: 'Mise en danger',  pts: 10 },
-    demiMiseDanger:  { label: '1/2 Mise en D.',  pts: 5 },
-    passageArriere:  { label: 'Pass. arrière',   pts: 2 },
-    penalite:        { label: 'Pénalité',        pts: -10 }
-};
 var CLE_STOCKAGE = 'compteurLutte_seance';
+var CLE_CONFIG = 'compteurLutte_config';
+var HASH_MDP_DEFAUT = '8c0f9d9ffab0adfb9cd5ef847105b2ea80774169ef2ba93558b8899b3d5635e3';
+var COULEURS_PALETTE = ['#E65100','#7B1FA2','#AB47BC','#546E7A','#FC466B','#00897B','#F9A825','#5C6BC0','#8D6E63','#26A69A'];
+var ACTIONS_DEFAUT = [
+    { id: 'tomber', label: 'Tomber', pts: 50, couleur: '#E65100', actif: true, defaut: true },
+    { id: 'miseDanger', label: 'Mise en danger', pts: 10, couleur: '#7B1FA2', actif: true, defaut: true },
+    { id: 'demiMiseDanger', label: '1/2 Mise en D.', pts: 5, couleur: '#AB47BC', actif: true, defaut: true },
+    { id: 'passageArriere', label: 'Pass. arrière', pts: 2, couleur: '#546E7A', actif: true, defaut: true },
+    { id: 'penalite', label: 'Pénalité', pts: -10, couleur: '#FC466B', actif: true, defaut: true }
+];
+
+/* ========== CONFIGURATION ========== */
+var config = creerConfigDefaut();
+
+function creerConfigDefaut() {
+    return {
+        motDePasseHash: HASH_MDP_DEFAUT,
+        actions: copierActions(ACTIONS_DEFAUT),
+        bipActions: false,
+        decompteAudio: false,
+        bipDebutFin: true
+    };
+}
+
+function copierActions(src) {
+    var arr = [];
+    for (var i = 0; i < src.length; i++) {
+        var a = {};
+        for (var k in src[i]) {
+            if (src[i].hasOwnProperty(k)) a[k] = src[i][k];
+        }
+        arr.push(a);
+    }
+    return arr;
+}
+
+function chargerConfig() {
+    try {
+        var data = localStorage.getItem(CLE_CONFIG);
+        if (data) {
+            var parsed = JSON.parse(data);
+            if (parsed.motDePasseHash) config.motDePasseHash = parsed.motDePasseHash;
+            if (Array.isArray(parsed.actions) && parsed.actions.length > 0) config.actions = parsed.actions;
+            if (typeof parsed.bipActions === 'boolean') config.bipActions = parsed.bipActions;
+            if (typeof parsed.decompteAudio === 'boolean') config.decompteAudio = parsed.decompteAudio;
+            if (typeof parsed.bipDebutFin === 'boolean') config.bipDebutFin = parsed.bipDebutFin;
+        }
+    } catch(e) {}
+}
+
+function sauvegarderConfig() {
+    try { localStorage.setItem(CLE_CONFIG, JSON.stringify(config)); } catch(e) {}
+}
+
+function getActionsActives() {
+    var arr = [];
+    for (var i = 0; i < config.actions.length; i++) {
+        if (config.actions[i].actif) arr.push(config.actions[i]);
+    }
+    return arr;
+}
+
+function getActionParId(id) {
+    for (var i = 0; i < config.actions.length; i++) {
+        if (config.actions[i].id === id) return config.actions[i];
+    }
+    return null;
+}
+
+function creerScoresVide() {
+    var s = {};
+    for (var i = 0; i < config.actions.length; i++) {
+        s[config.actions[i].id] = 0;
+    }
+    return s;
+}
+
+/* compat ancien format : ACTIONS pour l'historique */
+function getActionLabel(id) {
+    var a = getActionParId(id);
+    if (a) return a.label;
+    return id;
+}
+
+function getActionPts(id) {
+    var a = getActionParId(id);
+    if (a) return a.pts;
+    return 0;
+}
+
+/* ========== SHA-256 ========== */
+function hashSHA256(str, cb) {
+    try {
+        var data;
+        if (typeof TextEncoder !== 'undefined') {
+            data = new TextEncoder().encode(str);
+        } else {
+            data = new Uint8Array(str.length);
+            for (var i = 0; i < str.length; i++) data[i] = str.charCodeAt(i) & 0xFF;
+        }
+        crypto.subtle.digest('SHA-256', data).then(function(hash) {
+            var arr = new Uint8Array(hash);
+            var hex = '';
+            for (var i = 0; i < arr.length; i++) hex += ('0' + arr[i].toString(16)).slice(-2);
+            cb(hex);
+        }).catch(function() { cb(null); });
+    } catch(e) { cb(null); }
+}
 
 /* ========== ÉTAT ========== */
 var etat = creerEtatVide();
@@ -1051,8 +1278,8 @@ function faireGeneration() {
 
         match.id = m;
         match.rotation = etat.rotation;
-        match.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
-        match.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.scores1 = creerScoresVide();
+        match.scores2 = creerScoresVide();
         match.avert1 = 0; match.avert2 = 0;
         match.cartonRouge1 = false; match.cartonRouge2 = false;
         match.termine = false; match.forfait = false;
@@ -1156,8 +1383,8 @@ function relancerMatchs() {
 
         match.id = etat.matchs.length + m;
         match.rotation = etat.rotation;
-        match.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
-        match.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        match.scores1 = creerScoresVide();
+        match.scores2 = creerScoresVide();
         match.avert1 = 0; match.avert2 = 0;
         match.cartonRouge1 = false; match.cartonRouge2 = false;
         match.termine = false; match.forfait = false;
@@ -1244,9 +1471,12 @@ function afficherListeMatchs() {
 }
 
 function calculerTotal(scores) {
-    return scores.tomber * 50 + scores.miseDanger * 10 +
-           scores.demiMiseDanger * 5 + scores.passageArriere * 2 +
-           scores.penalite * (-10);
+    var total = 0;
+    for (var i = 0; i < config.actions.length; i++) {
+        var a = config.actions[i];
+        total += (scores[a.id] || 0) * a.pts;
+    }
+    return total;
 }
 
 /* ========== CHRONOMÈTRE ========== */
@@ -1273,6 +1503,8 @@ function lancerCombat(index) {
 
     document.getElementById('nom-l1').textContent = m.lutteur1;
     document.getElementById('nom-l2').textContent = m.lutteur2;
+
+    genererBoutonsScoring();
 
     timer.etat = 'IDLE';
     timer.secondes = etat.dureeCombat;
@@ -1301,7 +1533,7 @@ function toggleTimer() {
     if (timer.etat === 'IDLE') {
         timer.etat = 'SALUT';
         timer.delaiRestant = etat.delaiDepart;
-        beep(600, 150);
+        if (config.bipDebutFin) beep(600, 150);
         demarrerInterval();
     } else if (timer.etat === 'SALUT' || timer.etat === 'COMBAT') {
         clearInterval(timer.intervalId);
@@ -1329,19 +1561,24 @@ function tickTimer() {
         timer.delaiRestant--;
         if (timer.delaiRestant <= 0) {
             timer.etat = 'COMBAT';
-            beep(1000, 400);
+            if (config.bipDebutFin) beep(1000, 400);
         }
         majTimerUI();
         majScoringEnabled();
     } else if (timer.etat === 'COMBAT') {
         timer.secondes--;
+        if (config.decompteAudio && timer.secondes > 0 && timer.secondes <= 5) {
+            beep(800, 100);
+        }
         if (timer.secondes <= 0) {
             timer.secondes = 0;
             timer.etat = 'TERMINE';
             clearInterval(timer.intervalId);
             timer.intervalId = null;
-            beep(500, 600);
-            setTimeout(function() { beep(500, 600); }, 700);
+            if (config.bipDebutFin) {
+                beep(500, 600);
+                setTimeout(function() { beep(500, 600); }, 700);
+            }
         }
         majTimerUI();
         majScoringEnabled();
@@ -1451,7 +1688,7 @@ function marquerAction(lutteur, action) {
         temps: formatTemps(timer.secondes)
     });
 
-    beep(action === 'tomber' ? 1200 : 700, action === 'tomber' ? 300 : 100);
+    if (config.bipActions) beep(action === 'tomber' ? 1200 : 700, action === 'tomber' ? 300 : 100);
     majScoresUI();
     majHistoriqueUI();
     sauvegarder();
@@ -1535,7 +1772,8 @@ function majHistoriqueUI() {
         html += '<div class="historique-ligne">';
         html += '<span class="historique-temps">' + escH(h.temps) + '</span>';
         html += '<span style="color:' + couleur + ';font-weight:600">' + escH(nom) + '</span>';
-        html += '<span>' + escH(ACTIONS[h.action].label) + ' (' + (ACTIONS[h.action].pts > 0 ? '+' : '') + ACTIONS[h.action].pts + ')</span>';
+        var actPts = getActionPts(h.action);
+        html += '<span>' + escH(getActionLabel(h.action)) + ' (' + (actPts > 0 ? '+' : '') + actPts + ')</span>';
         html += '</div>';
     }
     zone.innerHTML = html;
@@ -1549,8 +1787,8 @@ function appliquerForfaits(nomDQ) {
             if (i === etat.currentMatch) continue;
             m.termine = true;
             m.forfait = true;
-            m.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
-            m.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+            m.scores1 = creerScoresVide();
+            m.scores2 = creerScoresVide();
             m.vainqueur = m.lutteur1 === nomDQ ? m.lutteur2 : m.lutteur1;
         }
     }
@@ -1605,10 +1843,10 @@ function validerCombat() {
 function confirmerValidation() {
     var m = etat.matchs[etat.currentMatch];
     if (m.cartonRouge1) {
-        m.scores1 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        m.scores1 = creerScoresVide();
         m.vainqueur = m.lutteur2;
     } else if (m.cartonRouge2) {
-        m.scores2 = { tomber:0, miseDanger:0, demiMiseDanger:0, passageArriere:0, penalite:0 };
+        m.scores2 = creerScoresVide();
         m.vainqueur = m.lutteur1;
     } else {
         var s1 = calculerTotal(m.scores1);
@@ -1790,9 +2028,10 @@ function exporterJSON() {
     lireConfig();
     var data = {
         app: 'CompteurLutte',
-        version: '0.2',
+        version: '0.3',
         exportDate: new Date().toISOString(),
-        seance: etat
+        seance: etat,
+        config: { actions: config.actions }
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     var nomFichier = 'CompteurLutte_' + (etat.classe || 'seance') + '_Enc' + etat.enceinte + '_' + etat.date + '.json';
@@ -1818,10 +2057,13 @@ function exporterCSV() {
     lignes.push('Classe' + sep + 'Date' + sep + 'Enceinte' + sep + 'Mode');
     lignes.push(etat.classe + sep + etat.date + sep + etat.enceinte + sep + etat.modeClassement);
     lignes.push('');
-    lignes.push('Combat' + sep + 'Rotation' + sep + 'Groupe' + sep + 'Lutteur Bleu' + sep + 'Lutteur Rouge' + sep +
-        'Tomber B' + sep + 'MeD B' + sep + '1/2MeD B' + sep + 'PA B' + sep + 'Pen B' + sep + 'Total B' + sep +
-        'Tomber R' + sep + 'MeD R' + sep + '1/2MeD R' + sep + 'PA R' + sep + 'Pen R' + sep + 'Total R' + sep +
-        'Vainqueur' + sep + 'Forfait' + sep + 'Carton Rouge');
+    var actives = getActionsActives();
+    var entCombat = 'Combat' + sep + 'Rotation' + sep + 'Groupe' + sep + 'Lutteur Bleu' + sep + 'Lutteur Rouge';
+    for (var ai = 0; ai < actives.length; ai++) entCombat += sep + actives[ai].label + ' B';
+    entCombat += sep + 'Total B';
+    for (var ai = 0; ai < actives.length; ai++) entCombat += sep + actives[ai].label + ' R';
+    entCombat += sep + 'Total R' + sep + 'Vainqueur' + sep + 'Forfait' + sep + 'Carton Rouge';
+    lignes.push(entCombat);
     for (var i = 0; i < etat.matchs.length; i++) {
         var m = etat.matchs[i];
         var s1 = calculerTotal(m.scores1);
@@ -1831,13 +2073,13 @@ function exporterCSV() {
         var cr = '';
         if (m.cartonRouge1) cr = m.lutteur1;
         if (m.cartonRouge2) cr = m.lutteur2;
-        lignes.push((i + 1) + sep + (m.rotation || 1) + sep + m.groupeId + sep +
-            m.lutteur1 + sep + m.lutteur2 + sep +
-            m.scores1.tomber + sep + m.scores1.miseDanger + sep + m.scores1.demiMiseDanger + sep +
-            m.scores1.passageArriere + sep + m.scores1.penalite + sep + s1 + sep +
-            m.scores2.tomber + sep + m.scores2.miseDanger + sep + m.scores2.demiMiseDanger + sep +
-            m.scores2.passageArriere + sep + m.scores2.penalite + sep + s2 + sep +
-            (m.vainqueur || 'Nul') + sep + (m.forfait ? 'Oui' : '') + sep + cr);
+        var ligne = (i + 1) + sep + (m.rotation || 1) + sep + m.groupeId + sep +
+            m.lutteur1 + sep + m.lutteur2;
+        for (var ai = 0; ai < actives.length; ai++) ligne += sep + (m.scores1[actives[ai].id] || 0);
+        ligne += sep + s1;
+        for (var ai = 0; ai < actives.length; ai++) ligne += sep + (m.scores2[actives[ai].id] || 0);
+        ligne += sep + s2 + sep + (m.vainqueur || 'Nul') + sep + (m.forfait ? 'Oui' : '') + sep + cr;
+        lignes.push(ligne);
     }
     lignes.push('');
     lignes.push('CLASSEMENT');
@@ -1944,6 +2186,10 @@ function importerJSON(evt) {
                     afficherMessage('Fichier corrompu : match ' + (mi + 1) + ' invalide.');
                     return;
                 }
+            }
+            if (data.config && Array.isArray(data.config.actions) && data.config.actions.length > 0) {
+                config.actions = data.config.actions;
+                sauvegarderConfig();
             }
             etat = s;
             ecrireConfig();
@@ -2463,7 +2709,7 @@ function fermerModale(id) { document.getElementById(id).classList.add('cache'); 
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var modales = ['modale-qr', 'modale-validation', 'modale-confirm', 'modale-aide'];
+        var modales = ['modale-qr', 'modale-validation', 'modale-confirm', 'modale-reglages'];
         for (var i = 0; i < modales.length; i++) {
             var el = document.getElementById(modales[i]);
             if (el && !el.classList.contains('cache')) { fermerModale(modales[i]); break; }
@@ -2505,6 +2751,253 @@ function confirmerNouvelle() {
         });
 }
 
+/* ========== GÉNÉRATION BOUTONS SCORING DYNAMIQUES ========== */
+function genererBoutonsScoring() {
+    var actives = getActionsActives();
+    for (var lutteur = 1; lutteur <= 2; lutteur++) {
+        var zone = document.getElementById('btns-l' + lutteur);
+        var html = '';
+        for (var i = 0; i < actives.length; i++) {
+            var a = actives[i];
+            var signe = a.pts >= 0 ? '+' : '';
+            html += '<button class="btn-action" style="background:' + escH(a.couleur) + '" ';
+            html += 'onclick="marquerAction(' + lutteur + ',\'' + escH(a.id) + '\')">';
+            html += '<span>' + escH(a.label) + '</span>';
+            html += '<span class="pts">' + signe + a.pts + '</span></button>';
+        }
+        zone.innerHTML = html;
+    }
+}
+
+/* ========== RÉGLAGES ========== */
+function ouvrirReglages() {
+    document.getElementById('cfg-bip-actions').checked = config.bipActions;
+    document.getElementById('cfg-decompte-audio').checked = config.decompteAudio;
+    document.getElementById('cfg-bip-debut-fin').checked = config.bipDebutFin;
+    document.getElementById('zone-config-avancee').classList.add('cache');
+    document.getElementById('zone-mdp-config').classList.remove('cache');
+    document.getElementById('inp-mdp-config').value = '';
+    document.getElementById('msg-mdp-erreur').style.display = 'none';
+    majAideTableActions();
+    document.getElementById('modale-reglages').classList.remove('cache');
+}
+
+function fermerReglages() {
+    fermerModale('modale-reglages');
+}
+
+function majConfigAudio() {
+    config.bipActions = document.getElementById('cfg-bip-actions').checked;
+    config.decompteAudio = document.getElementById('cfg-decompte-audio').checked;
+    config.bipDebutFin = document.getElementById('cfg-bip-debut-fin').checked;
+    sauvegarderConfig();
+}
+
+function verifierMdpConfig() {
+    var mdp = document.getElementById('inp-mdp-config').value;
+    if (!mdp) return;
+    hashSHA256(mdp, function(hash) {
+        if (hash === config.motDePasseHash) {
+            document.getElementById('zone-mdp-config').classList.add('cache');
+            document.getElementById('zone-config-avancee').classList.remove('cache');
+            document.getElementById('msg-mdp-erreur').style.display = 'none';
+            afficherListeActionsConfig();
+        } else {
+            document.getElementById('msg-mdp-erreur').style.display = 'block';
+        }
+    });
+}
+
+function changerMdp() {
+    var nouveau = document.getElementById('inp-nouveau-mdp').value;
+    var msgEl = document.getElementById('msg-mdp-change');
+    if (!nouveau || nouveau.length < 4) {
+        msgEl.className = 'msg-config erreur';
+        msgEl.textContent = 'Le mot de passe doit faire au moins 4 caractères.';
+        msgEl.style.display = 'block';
+        return;
+    }
+    hashSHA256(nouveau, function(hash) {
+        if (!hash) {
+            msgEl.className = 'msg-config erreur';
+            msgEl.textContent = 'Erreur lors du hachage.';
+            msgEl.style.display = 'block';
+            return;
+        }
+        config.motDePasseHash = hash;
+        sauvegarderConfig();
+        document.getElementById('inp-nouveau-mdp').value = '';
+        msgEl.className = 'msg-config succes';
+        msgEl.textContent = 'Mot de passe modifié avec succès.';
+        msgEl.style.display = 'block';
+        setTimeout(function() { msgEl.style.display = 'none'; }, 3000);
+    });
+}
+
+function afficherListeActionsConfig() {
+    var zone = document.getElementById('zone-liste-actions');
+    var html = '';
+    for (var i = 0; i < config.actions.length; i++) {
+        var a = config.actions[i];
+        var estDefaut = a.defaut ? ' action-defaut' : '';
+        html += '<div class="action-config-ligne' + estDefaut + '">';
+        html += '<label class="toggle" style="flex-shrink:0">';
+        html += '<input type="checkbox"' + (a.actif ? ' checked' : '') + ' onchange="toggleActionConfig(' + i + ',this.checked)">';
+        html += '<span class="toggle-slider"></span>';
+        html += '</label>';
+        html += '<input type="text" class="action-nom-input" value="' + escH(a.label) + '" ';
+        html += 'onchange="majActionNom(' + i + ',this.value)" maxlength="20">';
+        html += '<div class="action-pts-wrap">';
+        html += '<input type="number" class="action-pts-input" value="' + a.pts + '" ';
+        html += 'onchange="majActionPts(' + i + ',this.value)" min="-100" max="100">';
+        html += '<span class="unite">pts</span>';
+        html += '</div>';
+        html += '<span class="action-couleur" style="background:' + escH(a.couleur) + '" onclick="ouvrirPalette(' + i + ',this)"></span>';
+        html += '<button class="action-suppr" onclick="supprimerActionConfig(' + i + ')" aria-label="Supprimer">&times;</button>';
+        html += '</div>';
+    }
+    zone.innerHTML = html;
+    majBtnAjouter();
+}
+
+function toggleActionConfig(idx, checked) {
+    var nbActives = 0;
+    for (var i = 0; i < config.actions.length; i++) {
+        if (config.actions[i].actif) nbActives++;
+    }
+    if (checked && nbActives >= 6) {
+        afficherMsgActions('Maximum 6 actions actives.', 'erreur');
+        afficherListeActionsConfig();
+        return;
+    }
+    config.actions[idx].actif = checked;
+    sauvegarderConfig();
+    majAideTableActions();
+}
+
+function majActionNom(idx, val) {
+    val = val.trim();
+    if (!val) { afficherListeActionsConfig(); return; }
+    config.actions[idx].label = val;
+    sauvegarderConfig();
+    majAideTableActions();
+}
+
+function majActionPts(idx, val) {
+    var pts = parseInt(val);
+    if (isNaN(pts)) { afficherListeActionsConfig(); return; }
+    if (pts < -100) pts = -100;
+    if (pts > 100) pts = 100;
+    config.actions[idx].pts = pts;
+    sauvegarderConfig();
+    majAideTableActions();
+}
+
+function ouvrirPalette(idx, el) {
+    var existant = document.querySelector('.palette-couleurs');
+    if (existant) existant.parentNode.removeChild(existant);
+
+    var palette = document.createElement('div');
+    palette.className = 'palette-couleurs';
+    for (var c = 0; c < COULEURS_PALETTE.length; c++) {
+        var chip = document.createElement('span');
+        chip.className = 'palette-couleur' + (COULEURS_PALETTE[c] === config.actions[idx].couleur ? ' selected' : '');
+        chip.style.background = COULEURS_PALETTE[c];
+        chip.setAttribute('data-couleur', COULEURS_PALETTE[c]);
+        chip.setAttribute('data-idx', idx);
+        chip.onclick = function() {
+            var ci = parseInt(this.getAttribute('data-idx'));
+            config.actions[ci].couleur = this.getAttribute('data-couleur');
+            sauvegarderConfig();
+            var pal = document.querySelector('.palette-couleurs');
+            if (pal) pal.parentNode.removeChild(pal);
+            afficherListeActionsConfig();
+        };
+        palette.appendChild(chip);
+    }
+    el.parentNode.style.position = 'relative';
+    el.parentNode.appendChild(palette);
+    setTimeout(function() {
+        document.addEventListener('click', fermerPaletteExterieur, true);
+    }, 10);
+}
+
+function fermerPaletteExterieur(e) {
+    var pal = document.querySelector('.palette-couleurs');
+    if (pal && !pal.contains(e.target) && !e.target.classList.contains('action-couleur')) {
+        pal.parentNode.removeChild(pal);
+        document.removeEventListener('click', fermerPaletteExterieur, true);
+    }
+}
+
+function ajouterActionConfig() {
+    if (config.actions.length >= 10) {
+        afficherMsgActions('Maximum 10 actions atteint.', 'erreur');
+        return;
+    }
+    var nbActives = 0;
+    for (var i = 0; i < config.actions.length; i++) {
+        if (config.actions[i].actif) nbActives++;
+    }
+    var usedColors = {};
+    for (var i = 0; i < config.actions.length; i++) usedColors[config.actions[i].couleur] = true;
+    var couleur = COULEURS_PALETTE[0];
+    for (var c = 0; c < COULEURS_PALETTE.length; c++) {
+        if (!usedColors[COULEURS_PALETTE[c]]) { couleur = COULEURS_PALETTE[c]; break; }
+    }
+    var newId = 'custom_' + Date.now();
+    config.actions.push({
+        id: newId,
+        label: 'Action ' + (config.actions.length + 1),
+        pts: 1,
+        couleur: couleur,
+        actif: nbActives < 6,
+        defaut: false
+    });
+    sauvegarderConfig();
+    afficherListeActionsConfig();
+    majAideTableActions();
+}
+
+function supprimerActionConfig(idx) {
+    if (config.actions[idx].defaut) return;
+    config.actions.splice(idx, 1);
+    sauvegarderConfig();
+    afficherListeActionsConfig();
+    majAideTableActions();
+}
+
+function majBtnAjouter() {
+    var btn = document.getElementById('btn-ajouter-action');
+    btn.disabled = config.actions.length >= 10;
+}
+
+function afficherMsgActions(msg, type) {
+    var el = document.getElementById('msg-actions');
+    el.className = 'msg-config ' + type;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 3000);
+}
+
+function majAideTableActions() {
+    var zone = document.getElementById('aide-table-actions');
+    if (!zone) return;
+    var actives = getActionsActives();
+    var html = '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:0.9em">';
+    for (var i = 0; i < actives.length; i++) {
+        var a = actives[i];
+        var radius = '';
+        if (i === 0) radius = 'border-radius:4px 0 0 0';
+        if (i === actives.length - 1) radius = 'border-radius:0 0 0 4px';
+        var signe = a.pts >= 0 ? '+' : '';
+        html += '<tr><td style="padding:4px 8px;font-weight:600;background:' + escH(a.couleur) + ';color:#fff;' + radius + '">' + escH(a.label) + '</td>';
+        html += '<td style="padding:4px 8px;text-align:right">' + signe + a.pts + ' pts</td></tr>';
+    }
+    html += '</table>';
+    zone.innerHTML = html;
+}
+
 /* ========== WAKE LOCK + FULLSCREEN ========== */
 var wakeLock = null;
 function requestWakeLock() {
@@ -2539,6 +3032,7 @@ document.getElementById('inp-date').addEventListener('change', function() { lire
 
 /* ========== INITIALISATION ========== */
 (function init() {
+    chargerConfig();
     charger();
     if (etat.date) {
         var joursEcoules = Math.floor((Date.now() - new Date(etat.date).getTime()) / 86400000);
