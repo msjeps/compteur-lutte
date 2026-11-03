@@ -1817,12 +1817,12 @@ function marquerAction(lutteur, action) {
     if (action === 'penalite') {
         var avertKey = lutteur === 1 ? 'avert1' : 'avert2';
         m[avertKey]++;
-        if (m[avertKey] >= 2) {
+        var nomPen = lutteur === 1 ? m.lutteur1 : m.lutteur2;
+        if (compterAvertissementsGlobaux(nomPen) >= 2) {
             var crKey = lutteur === 1 ? 'cartonRouge1' : 'cartonRouge2';
             m[crKey] = true;
-            var nomDQ = lutteur === 1 ? m.lutteur1 : m.lutteur2;
-            if (etat.disqualifies.indexOf(nomDQ) === -1) etat.disqualifies.push(nomDQ);
-            appliquerForfaits(nomDQ);
+            if (etat.disqualifies.indexOf(nomPen) === -1) etat.disqualifies.push(nomPen);
+            appliquerForfaits(nomPen);
         }
     }
 
@@ -1866,12 +1866,12 @@ function annulerAction(lutteur) {
                 var ak = lutteur === 1 ? 'avert1' : 'avert2';
                 if (m[ak] > 0) m[ak]--;
                 var crk = lutteur === 1 ? 'cartonRouge1' : 'cartonRouge2';
-                if (m[ak] < 2 && m[crk]) {
+                var nomAnnule = lutteur === 1 ? m.lutteur1 : m.lutteur2;
+                if (compterAvertissementsGlobaux(nomAnnule) < 2 && m[crk]) {
                     m[crk] = false;
-                    var nomDQ = lutteur === 1 ? m.lutteur1 : m.lutteur2;
-                    var idx = etat.disqualifies.indexOf(nomDQ);
+                    var idx = etat.disqualifies.indexOf(nomAnnule);
                     if (idx !== -1) etat.disqualifies.splice(idx, 1);
-                    annulerForfaits(nomDQ);
+                    annulerForfaits(nomAnnule);
                 }
             }
             m.historique.splice(i, 1);
@@ -1890,13 +1890,15 @@ function majScoresUI() {
     document.getElementById('pts-l1').textContent = calculerTotal(m.scores1);
     document.getElementById('pts-l2').textContent = calculerTotal(m.scores2);
 
+    var avertGlobal1 = compterAvertissementsGlobaux(m.lutteur1);
     var a1 = document.getElementById('avert-l1');
-    a1.textContent = m.avert1 + ' avert.';
+    a1.textContent = avertGlobal1 + ' avert.';
     a1.className = 'scoring-avert' + (m.cartonRouge1 ? ' carton-rouge' : '');
     if (m.cartonRouge1) a1.textContent = 'CARTON ROUGE';
 
+    var avertGlobal2 = compterAvertissementsGlobaux(m.lutteur2);
     var a2 = document.getElementById('avert-l2');
-    a2.textContent = m.avert2 + ' avert.';
+    a2.textContent = avertGlobal2 + ' avert.';
     a2.className = 'scoring-avert' + (m.cartonRouge2 ? ' carton-rouge' : '');
     if (m.cartonRouge2) a2.textContent = 'CARTON ROUGE';
 }
@@ -1949,6 +1951,16 @@ function annulerForfaits(nom) {
             m.vainqueur = null;
         }
     }
+}
+
+function compterAvertissementsGlobaux(nom) {
+    var total = 0;
+    for (var i = 0; i < etat.matchs.length; i++) {
+        var mx = etat.matchs[i];
+        if (mx.lutteur1 === nom) total += mx.avert1;
+        if (mx.lutteur2 === nom) total += mx.avert2;
+    }
+    return total;
 }
 
 /* ========== VALIDATION ========== */
