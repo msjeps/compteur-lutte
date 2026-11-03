@@ -143,12 +143,32 @@ Audit du 2026-11-02 (v0.1). Etat des corrections.
 
 ---
 
+## Ameliorations v0.3 → v0.4 (commit `e2d9aba`)
+
+### 23. Statut dispense (HAUTE — retour terrain)
+
+- **Impact** : certains eleves sont dispenses d'activite physique. Ils doivent participer aux roles sociaux (arbitre, juge, marqueur) mais jamais en tant que lutteur. Absent de l'app, l'enseignante devait gerer manuellement.
+- **Solution** : bouton toggle "D" sur chaque tag d'eleve. Style orange avec "(disp.)". Dispenses exclus des paires round-robin, du classement, du CSV et du QR. Champ `etat.dispenses[]` (tableau plat de noms). Validation : minimum 2 non-dispenses par groupe.
+
+### 24. Juges supplementaires automatiques (HAUTE — retour terrain)
+
+- **Impact** : dans les groupes de plus de 6 eleves, apres les 6 roles obligatoires (2 lutteurs, 1 arbitre, 2 juges, 1 marqueur), les eleves restants n'avaient aucun role. En cours, l'enseignante devait les placer manuellement.
+- **Solution** : tous les eleves restants sont automatiquement places en juges supplementaires. Champ `match.jugesSupp[]`. Affichage dans la liste des matchs et l'ecran de combat.
+
+### 25. Modification du nom d'un eleve apres generation (MOYENNE — retour terrain)
+
+- **Impact** : une faute de frappe dans un prenom obligeait a supprimer l'eleve et regenerer tous les combats, perdant les matchs deja joues.
+- **Solution** : clic sur le nom dans les tags → input inline. Enter/blur confirme, Escape annule. Le nouveau nom est propage dans : `etat.groupes`, `etat.dispenses`, `etat.disqualifies`, et tous les champs de tous les matchs (`lutteur1/2`, `arbitre`, `juge1/2`, `marqueur`, `vainqueur`, `jugesSupp`). Guard contre double appel blur.
+
+---
+
 ## Checklist avant prochaine publication
 
 ```
 [x] Corrections 5-22 ci-dessus triees et appliquees
-[x] CACHE_NAME du sw.js incremente (v0.2)
-[x] Version affichee mise a jour (0.2)
+[x] Corrections 23-25 (dispense, juges supp, modif nom)
+[x] CACHE_NAME du sw.js incremente (v0.4)
+[x] Version affichee mise a jour (0.4)
 [ ] Test sur tablette Lenovo TB-X606F
 [ ] Export/import JSON round-trip verifie
 [ ] QR code teste avec payload reel
