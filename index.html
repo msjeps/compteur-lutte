@@ -414,6 +414,10 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
     :root:not([data-theme="light"]) .match-card.forfait { background: #2A2A2A; border-color: #555; }
     :root:not([data-theme="light"]) .match-card.en-cours { background: #3A3000; border-color: var(--couleur-accent); }
     :root:not([data-theme="light"]) .tag-eleve { background: #1A3A5C; color: #B3D9FF; }
+    :root:not([data-theme="light"]) .tag-eleve.dispense { background: #3A2800; color: #FFB74D; border-color: #FF8F00; }
+    :root:not([data-theme="light"]) .tag-dispense-btn { background: rgba(255,255,255,0.1); color: #9E9E9E; }
+    :root:not([data-theme="light"]) .tag-eleve.dispense .tag-dispense-btn { background: #FF8F00; color: #fff; }
+    :root:not([data-theme="light"]) .tag-edit-input { background: #2C2C2C; color: var(--couleur-texte); border-color: var(--couleur-primaire); }
     :root:not([data-theme="light"]) .stepper-btn { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
     :root:not([data-theme="light"]) .btn-annuler { border-color: #555; color: #9E9E9E; }
     :root:not([data-theme="light"]) .btn-fermer { background: #333; color: #CCC; }
@@ -441,6 +445,10 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 :root[data-theme="dark"] .match-card.forfait { background: #2A2A2A; border-color: #555; }
 :root[data-theme="dark"] .match-card.en-cours { background: #3A3000; border-color: var(--couleur-accent); }
 :root[data-theme="dark"] .tag-eleve { background: #1A3A5C; color: #B3D9FF; }
+:root[data-theme="dark"] .tag-eleve.dispense { background: #3A2800; color: #FFB74D; border-color: #FF8F00; }
+:root[data-theme="dark"] .tag-dispense-btn { background: rgba(255,255,255,0.1); color: #9E9E9E; }
+:root[data-theme="dark"] .tag-eleve.dispense .tag-dispense-btn { background: #FF8F00; color: #fff; }
+:root[data-theme="dark"] .tag-edit-input { background: #2C2C2C; color: var(--couleur-texte); border-color: var(--couleur-primaire); }
 :root[data-theme="dark"] .stepper-btn { background: #2C2C2C; border-color: #444; color: var(--couleur-texte); }
 :root[data-theme="dark"] .btn-annuler { border-color: #555; color: #9E9E9E; }
 :root[data-theme="dark"] .btn-fermer { background: #333; color: #CCC; }
@@ -560,6 +568,20 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
 .groupe-bloc { background: #FFFDE7; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
 .msg-doublon { color: #C62828; font-size: 0.8em; margin-top: 4px; display: none; }
 .dq-badge { color: var(--couleur-danger); font-weight: 700; font-size: 0.8em; margin-left: 4px; }
+.tag-eleve.dispense { background: #FFF3E0; border: 2px dashed #FF8F00; color: #E65100; }
+.tag-dispense-btn {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: none; background: rgba(0,0,0,0.08); color: #757575;
+    font-size: 0.65em; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; line-height: 1;
+}
+.tag-eleve.dispense .tag-dispense-btn { background: #FF8F00; color: #fff; }
+.tag-nom { cursor: pointer; }
+.tag-edit-input {
+    border: 2px solid var(--couleur-primaire); border-radius: 6px;
+    padding: 2px 6px; font-size: 0.9em; font-family: inherit;
+    width: 80px; background: var(--couleur-blanc); color: var(--couleur-texte);
+}
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .groupe-bloc { background: #2C2800; }
     :root:not([data-theme="light"]) .modale { background: #1E1E1E; color: var(--couleur-texte); }
@@ -579,7 +601,7 @@ input:focus, select:focus { border-color: var(--couleur-primaire); outline: none
             <h1 style="flex:1;text-align:center">Compteur Lutte</h1>
             <button onclick="ouvrirReglages()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.2em;cursor:pointer;flex-shrink:0" aria-label="Réglages">&#9881;</button>
         </div>
-        <p class="version">Version 0.3</p>
+        <p class="version">Version 0.4</p>
     </div>
 
     <!-- Séance -->
@@ -1007,6 +1029,7 @@ function creerEtatVide() {
         modeClassement: 'points',
         groupes: [{ id: 'G1', eleves: [] }],
         matchs: [],
+        dispenses: [],
         disqualifies: [],
         currentMatch: -1,
         rotation: 1
@@ -1087,7 +1110,11 @@ function afficherGroupes() {
         html += '</div>';
         html += '<div class="tags-container" id="tags-g' + g + '">';
         for (var e = 0; e < gr.eleves.length; e++) {
-            html += '<span class="tag-eleve">' + escH(gr.eleves[e]);
+            var estDisp = etat.dispenses.indexOf(gr.eleves[e]) !== -1;
+            html += '<span class="tag-eleve' + (estDisp ? ' dispense' : '') + '">';
+            html += '<span class="tag-nom" onclick="modifierNomEleve(' + g + ',' + e + ')">' + escH(gr.eleves[e]) + '</span>';
+            if (estDisp) html += '<span style="font-size:0.7em;font-weight:600">(disp.)</span>';
+            html += '<button class="tag-dispense-btn" onclick="toggleDispense(' + g + ',' + e + ')" title="' + (estDisp ? 'Retirer dispense' : 'Marquer dispensé') + '">D</button>';
             html += '<button class="suppr-tag" onclick="supprimerEleve(' + g + ',' + e + ')" aria-label="Supprimer">&times;</button>';
             html += '</span>';
         }
@@ -1140,8 +1167,89 @@ function ajouterEleve(gi) {
 }
 
 function supprimerEleve(gi, ei) {
+    var nom = etat.groupes[gi].eleves[ei];
     etat.groupes[gi].eleves.splice(ei, 1);
+    var di = etat.dispenses.indexOf(nom);
+    if (di !== -1) etat.dispenses.splice(di, 1);
     afficherGroupes();
+    sauvegarder();
+}
+
+function toggleDispense(gi, ei) {
+    var nom = etat.groupes[gi].eleves[ei];
+    var idx = etat.dispenses.indexOf(nom);
+    if (idx !== -1) {
+        etat.dispenses.splice(idx, 1);
+    } else {
+        etat.dispenses.push(nom);
+    }
+    afficherGroupes();
+    sauvegarder();
+}
+
+function modifierNomEleve(gi, ei) {
+    var ancienNom = etat.groupes[gi].eleves[ei];
+    var tagsContainer = document.getElementById('tags-g' + gi);
+    if (!tagsContainer || !tagsContainer.children[ei]) return;
+    var nomSpan = tagsContainer.children[ei].querySelector('.tag-nom');
+    if (!nomSpan || nomSpan.querySelector('input')) return;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'tag-edit-input';
+    input.value = ancienNom;
+    input.onkeydown = function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { e.preventDefault(); afficherGroupes(); }
+    };
+    var confirme = false;
+    input.onblur = function() {
+        if (confirme) return;
+        confirme = true;
+        confirmerModifNom(gi, ei, input.value.trim(), ancienNom);
+    };
+    nomSpan.textContent = '';
+    nomSpan.appendChild(input);
+    input.focus();
+    input.select();
+}
+
+function confirmerModifNom(gi, ei, nouveau, ancienNom) {
+    if (!nouveau || nouveau === ancienNom) { afficherGroupes(); return; }
+    var doublon = false;
+    for (var g = 0; g < etat.groupes.length; g++) {
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++) {
+            if (g === gi && e === ei) continue;
+            if (etat.groupes[g].eleves[e].toLowerCase() === nouveau.toLowerCase()) { doublon = true; break; }
+        }
+        if (doublon) break;
+    }
+    if (doublon) {
+        afficherMessage('Ce prénom existe déjà.');
+        afficherGroupes();
+        return;
+    }
+    etat.groupes[gi].eleves[ei] = nouveau;
+    var di = etat.dispenses.indexOf(ancienNom);
+    if (di !== -1) etat.dispenses[di] = nouveau;
+    var dqi = etat.disqualifies.indexOf(ancienNom);
+    if (dqi !== -1) etat.disqualifies[dqi] = nouveau;
+    for (var m = 0; m < etat.matchs.length; m++) {
+        var mx = etat.matchs[m];
+        if (mx.lutteur1 === ancienNom) mx.lutteur1 = nouveau;
+        if (mx.lutteur2 === ancienNom) mx.lutteur2 = nouveau;
+        if (mx.arbitre === ancienNom) mx.arbitre = nouveau;
+        if (mx.juge1 === ancienNom) mx.juge1 = nouveau;
+        if (mx.juge2 === ancienNom) mx.juge2 = nouveau;
+        if (mx.marqueur === ancienNom) mx.marqueur = nouveau;
+        if (mx.vainqueur === ancienNom) mx.vainqueur = nouveau;
+        if (mx.jugesSupp) {
+            for (var js = 0; js < mx.jugesSupp.length; js++) {
+                if (mx.jugesSupp[js] === ancienNom) mx.jugesSupp[js] = nouveau;
+            }
+        }
+    }
+    afficherGroupes();
+    if (etat.matchs.length > 0) afficherListeMatchs();
     sauvegarder();
 }
 
@@ -1178,8 +1286,16 @@ function genererMatchs() {
     lireConfig();
     var totalEleves = 0;
     for (var g = 0; g < etat.groupes.length; g++) {
+        var nbNonDisp = 0;
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++) {
+            if (etat.dispenses.indexOf(etat.groupes[g].eleves[e]) === -1) nbNonDisp++;
+        }
         if (etat.groupes[g].eleves.length < 2) {
             afficherMessage('Le groupe ' + escH(etat.groupes[g].id) + ' doit avoir au moins 2 élèves.');
+            return;
+        }
+        if (nbNonDisp < 2) {
+            afficherMessage('Le groupe ' + escH(etat.groupes[g].id) + ' doit avoir au moins 2 lutteurs non dispensés.');
             return;
         }
         totalEleves += etat.groupes[g].eleves.length;
@@ -1211,9 +1327,13 @@ function faireGeneration() {
     for (var g = 0; g < etat.groupes.length; g++) {
         var gr = etat.groupes[g];
         groupeMatchs[gr.id] = [];
-        for (var i = 0; i < gr.eleves.length; i++) {
-            for (var j = i + 1; j < gr.eleves.length; j++) {
-                groupeMatchs[gr.id].push({ groupeId: gr.id, lutteur1: gr.eleves[i], lutteur2: gr.eleves[j] });
+        var lutteurs = [];
+        for (var e = 0; e < gr.eleves.length; e++) {
+            if (etat.dispenses.indexOf(gr.eleves[e]) === -1) lutteurs.push(gr.eleves[e]);
+        }
+        for (var i = 0; i < lutteurs.length; i++) {
+            for (var j = i + 1; j < lutteurs.length; j++) {
+                groupeMatchs[gr.id].push({ groupeId: gr.id, lutteur1: lutteurs[i], lutteur2: lutteurs[j] });
             }
         }
     }
@@ -1279,6 +1399,12 @@ function faireGeneration() {
         var mrq = pickBest(dispo.slice(), 'marqueur', match.groupeId);
         if (mrq) { match.marqueur = mrq.nom; roleCounts[mrq.nom].marqueur++; retirer(dispo, mrq.nom); }
 
+        match.jugesSupp = [];
+        for (var d = 0; d < dispo.length; d++) {
+            match.jugesSupp.push(dispo[d].nom);
+            roleCounts[dispo[d].nom].juge++;
+        }
+
         match.id = m;
         match.rotation = etat.rotation;
         match.scores1 = creerScoresVide();
@@ -1303,7 +1429,11 @@ function peutRelancer() {
     }
     if (!tousTermines) return false;
     for (var g = 0; g < etat.groupes.length; g++) {
-        if (etat.groupes[g].eleves.length <= 3 && etat.groupes[g].eleves.length >= 2) return true;
+        var nbND = 0;
+        for (var e = 0; e < etat.groupes[g].eleves.length; e++) {
+            if (etat.dispenses.indexOf(etat.groupes[g].eleves[e]) === -1) nbND++;
+        }
+        if (nbND <= 3 && nbND >= 2) return true;
     }
     return false;
 }
@@ -1330,10 +1460,14 @@ function relancerMatchs() {
     var nouveaux = [];
     for (var g = 0; g < etat.groupes.length; g++) {
         var gr = etat.groupes[g];
+        var lutteurs = [];
+        for (var e = 0; e < gr.eleves.length; e++) {
+            if (etat.dispenses.indexOf(gr.eleves[e]) === -1) lutteurs.push(gr.eleves[e]);
+        }
         var paires = [];
-        for (var i = 0; i < gr.eleves.length; i++) {
-            for (var j = i + 1; j < gr.eleves.length; j++) {
-                paires.push({ groupeId: gr.id, lutteur1: gr.eleves[i], lutteur2: gr.eleves[j] });
+        for (var i = 0; i < lutteurs.length; i++) {
+            for (var j = i + 1; j < lutteurs.length; j++) {
+                paires.push({ groupeId: gr.id, lutteur1: lutteurs[i], lutteur2: lutteurs[j] });
             }
         }
         for (var i = paires.length - 1; i > 0; i--) {
@@ -1383,6 +1517,12 @@ function relancerMatchs() {
         if (j2) { match.juge2 = j2.nom; roleCounts[j2.nom].juge++; retirer(dispo, j2.nom); }
         var mrq = pickBest(dispo.slice(), 'marqueur', match.groupeId);
         if (mrq) { match.marqueur = mrq.nom; roleCounts[mrq.nom].marqueur++; retirer(dispo, mrq.nom); }
+
+        match.jugesSupp = [];
+        for (var d = 0; d < dispo.length; d++) {
+            match.jugesSupp.push(dispo[d].nom);
+            roleCounts[dispo[d].nom].juge++;
+        }
 
         match.id = etat.matchs.length + m;
         match.rotation = etat.rotation;
@@ -1435,6 +1575,7 @@ function afficherListeMatchs() {
         var juges = [];
         if (m.juge1) juges.push(escH(m.juge1));
         if (m.juge2) juges.push(escH(m.juge2));
+        if (m.jugesSupp) { for (var js = 0; js < m.jugesSupp.length; js++) juges.push(escH(m.jugesSupp[js])); }
         if (juges.length) roles.push('Juges: ' + juges.join(', '));
         if (m.marqueur) roles.push('Marq: ' + escH(m.marqueur));
         html += roles.join(' | ');
@@ -1500,6 +1641,7 @@ function lancerCombat(index) {
     var juges = [];
     if (m.juge1) juges.push(escH(m.juge1));
     if (m.juge2) juges.push(escH(m.juge2));
+    if (m.jugesSupp) { for (var js = 0; js < m.jugesSupp.length; js++) juges.push(escH(m.jugesSupp[js])); }
     if (juges.length) rolesHtml += ' | Juges : ' + juges.join(', ');
     if (m.marqueur) rolesHtml += ' | Marqueur : ' + escH(m.marqueur);
     document.getElementById('combat-roles').innerHTML = rolesHtml;
@@ -1943,7 +2085,9 @@ function afficherClassement(parGroupe) {
 
         var stats = {};
         for (var e = 0; e < gr.eleves.length; e++) {
-            stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+            if (etat.dispenses.indexOf(gr.eleves[e]) === -1) {
+                stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+            }
         }
 
         for (var i = 0; i < etat.matchs.length; i++) {
@@ -2031,7 +2175,7 @@ function exporterJSON() {
     lireConfig();
     var data = {
         app: 'CompteurLutte',
-        version: '0.3',
+        version: '0.4',
         exportDate: new Date().toISOString(),
         seance: etat,
         config: { actions: config.actions }
@@ -2098,7 +2242,9 @@ function exporterCSV() {
         lignes.push(entetes);
         var stats = {};
         for (var e = 0; e < gr.eleves.length; e++) {
-            stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+            if (etat.dispenses.indexOf(gr.eleves[e]) === -1) {
+                stats[gr.eleves[e]] = { victoires: 0, nuls: 0, defaites: 0, ptsTotaux: 0, ptsClass: 0 };
+            }
         }
         for (var j = 0; j < etat.matchs.length; j++) {
             var mx = etat.matchs[j];
@@ -2227,7 +2373,9 @@ function exporterQR() {
         var gr = etat.groupes[g];
         var stats = {};
         for (var e = 0; e < gr.eleves.length; e++) {
-            stats[gr.eleves[e]] = { v: 0, n: 0, d: 0, p: 0, pc: 0 };
+            if (etat.dispenses.indexOf(gr.eleves[e]) === -1) {
+                stats[gr.eleves[e]] = { v: 0, n: 0, d: 0, p: 0, pc: 0 };
+            }
         }
         for (var i = 0; i < etat.matchs.length; i++) {
             var m = etat.matchs[i];
