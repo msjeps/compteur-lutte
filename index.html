@@ -1801,7 +1801,7 @@ function majScoringEnabled() {
     var zone = document.getElementById('scoring-zone');
     var m = etat.currentMatch >= 0 ? etat.matchs[etat.currentMatch] : null;
     var cartonActif = m && (m.cartonRouge1 || m.cartonRouge2);
-    var timerActif = timer.etat === 'COMBAT' || timer.etat === 'PAUSE';
+    var timerActif = timer.etat === 'COMBAT' || timer.etat === 'PAUSE' || timer.etat === 'TERMINE';
     zone.classList.toggle('scoring-disabled', !timerActif);
     zone.classList.toggle('scoring-carton-rouge', timerActif && cartonActif);
 }
