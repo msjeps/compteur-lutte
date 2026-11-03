@@ -162,6 +162,22 @@ Audit du 2026-11-02 (v0.1). Etat des corrections.
 
 ---
 
+## Corrections effectuees (commits `0b931df` et `3a70292`, 2026-11-03)
+
+### 26. Scoring desactive apres arret du chrono — Corriger inoperant (HAUTE)
+
+- **Fichier** : `index.html`, fonction `majScoringEnabled()`
+- **Probleme** : quand le chrono atteignait 0 (etat TERMINE), `timerActif` etait `false` car la condition ne comptait que COMBAT et PAUSE. Tous les boutons de scoring restaient desactives. Le bouton "Corriger" dans la modale de validation fermait la modale mais ramenait sur un ecran fige — impossible de modifier les actions.
+- **Correction** : ajout de `|| timer.etat === 'TERMINE'` dans la condition `timerActif`. Les boutons restent actifs tant que le combat n'est pas valide.
+
+### 27. Avertissements non cumules entre les matchs (HAUTE — retour terrain)
+
+- **Fichier** : `index.html`, fonctions `marquerAction()`, `annulerAction()`, `majScoresUI()`
+- **Probleme** : chaque match avait son propre compteur de penalites (`m.avert1`/`m.avert2`). Un eleve qui prenait 1 penalite dans un match et 1 dans un autre ne declenchait jamais de carton rouge (seuil de 2 par match, jamais atteint).
+- **Correction** : nouvelle fonction `compterAvertissementsGlobaux(nom)` qui cumule les penalites d'un eleve sur tous ses matchs. Le seuil du carton rouge, l'annulation et l'affichage utilisent ce cumul global. Les `avert1`/`avert2` par match restent intacts pour le CSV et le JSON.
+
+---
+
 ## Checklist avant prochaine publication
 
 ```
